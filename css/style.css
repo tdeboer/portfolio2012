@@ -1,12 +1,20 @@
 /* style.scss */
 nav {
-  width: 100%;
-  background-color: #4d4d4d; }
+  background-color: #e6e6e6;
+  text-align: center; }
   nav li {
     list-style: none;
     display: inline-block; }
     nav li a {
-      color: teal; }
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+      background-color: #aaa; }
+      nav li a:hover, nav li a.selected {
+        background-color: #333; }
 
 .wrapper {
   position: absolute;

@@ -4,7 +4,9 @@ require.config({
 	dir: "../../webapp-build",
 	optimize: "none",
 	paths: {
-		"jqm":   "jquery.mobile"
+		"jqm": "jquery.mobile",
+		"jqui":	"jquery-ui-1.9.1.custom.min",
+		"swipe": "jquery.ui.pageswipe"
 	},
 	modules: [
         {
@@ -15,8 +17,8 @@ require.config({
     urlArgs: "bust=" +  (new Date()).getTime()
 });
 
-require(["jquery", 'pageswipe'], 
-	function($, pageswipe) {
-		//console.log(jqm);
+require(["jquery", 'swipe'], 
+	function($, swipe) {
+		$(".page").pageswipe();
 	}
 );

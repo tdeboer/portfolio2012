@@ -1,7 +1,7 @@
-@mixin rounded($side, $radius: 10px) {
-	-webkit-border-#{$side}-radius: $radius;
-	-moz-border-radius-#{$side}: $radius;
-	border-#{$side}-radius: $radius;
+@mixin rounded($radius: 10px) {
+	-webkit-border-radius: $radius;
+	-moz-border-radius: $radius;
+	border-radius: $radius;
 }
 
 @mixin gradientbg($from, $to, $start: top) {
