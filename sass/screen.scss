@@ -1,8 +1,12 @@
-/* style.scss */
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
 @import "base";
 
 body {
 	overflow-x: hidden;
+	font-family: Helvetica, Arial, sans-serif;
 }
 
 .wrapper {
@@ -12,6 +16,7 @@ body {
 .page {
 	padding: 40px;
 	background-color: teal;
+	/* @include debug-vertical-alignment; */
 }
 
 nav {
@@ -24,7 +29,7 @@ nav {
 			display: inline-block;
 			width: 8px;
 			height: 8px;
-			@include rounded(4px);
+			@include border-radius(4px);
 			background-color: #aaa;
 			&:hover, &.selected {
 				background-color: #333;
@@ -34,16 +39,15 @@ nav {
 }
 
 
-
 /*
  Header bar
  */
  
 .header {
-	font-family: Helvetica, Arial, sans-serif;
 	zoom: 1;
+	line-height: 1em;
 	color: #fff;
-	@include gradientbg(#3C3C3C, #111, top);
+	@include background-image(linear-gradient(#3C3C3C, #111));
 	border: {
 		style: solid;
 		width: 1px;
@@ -68,7 +72,7 @@ nav {
 			height: 18px;
 		}
 		.btn-about {
-			@include button(right);
+			@include button(right, #555);
 			top: 0.3em;
 		}
 
@@ -92,6 +96,25 @@ nav {
 }
 
 
+/*
+ content
+*/
+article h1 {
+	@include adjust-font-size-to(42px);
+}
+
+article h2 {
+	@include adjust-font-size-to(32px);
+}
+
+
+/*
+ footer
+*/
+footer ul {
+	
+}
+
 
 /*
  media queries
@@ -100,6 +123,6 @@ nav {
 @media screen and (-webkit-min-device-pixel-ratio: 2), screen and (max--moz-device-pixel-ratio: 2) {
 	.icon-home {
 		background: url('../gfx/logo@2x.png') no-repeat;
-		background-size: 18px;
+		@include background-size(18px);
 	}
 }
