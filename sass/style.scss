@@ -1,6 +1,19 @@
 /* style.scss */
 @import "base";
 
+body {
+	overflow-x: hidden;
+}
+
+.wrapper {
+	position: relative;
+}
+
+.page {
+	padding: 40px;
+	background-color: teal;
+}
+
 nav {
 	background-color: #e6e6e6;
 	text-align: center;
@@ -9,9 +22,9 @@ nav {
 		display: inline-block;
 		a {
 			display: inline-block;
-			width: 10px;
-			height: 10px;
-			@include rounded(5px);
+			width: 8px;
+			height: 8px;
+			@include rounded(4px);
 			background-color: #aaa;
 			&:hover, &.selected {
 				background-color: #333;
@@ -20,17 +33,17 @@ nav {
 	}
 }
 
-.wrapper {
-	position: absolute;
-	width: 100%;
-	top: 0;
-	left: 0;
-}
 
+
+/*
+ Header bar
+ */
+ 
 .header {
 	font-family: Helvetica, Arial, sans-serif;
 	zoom: 1;
 	color: #fff;
+	@include gradientbg(#3C3C3C, #111, top);
 	border: {
 		style: solid;
 		width: 1px;
@@ -39,7 +52,6 @@ nav {
 		top-color: #3c3c3c;
 		bottom-color: #111;
 	}
-	@include gradientbg(#3C3C3C, #111, top);
 		a {
 			color: #fff;
 		}
@@ -49,15 +61,25 @@ nav {
 			padding: 0;
 		}
 		.logo {
+			@extend .btn-prep;
 			left: 0.6em;
 			top: 0.6em;
 			width: 18px;
 			height: 18px;
 		}
-		.btn-small {
+		.btn-about {
+			@include button(right);
 			top: 0.3em;
 		}
 
+}
+
+.btn-prep {	
+	margin: 0;
+	display: inline-block;
+	position: absolute;
+	font-weight: bold;
+	text-decoration: none;
 }
 
 .icon-home {
@@ -70,35 +92,14 @@ nav {
 }
 
 
+
+/*
+ media queries
+ */
+
 @media screen and (-webkit-min-device-pixel-ratio: 2), screen and (max--moz-device-pixel-ratio: 2) {
 	.icon-home {
 		background: url('../gfx/logo@2x.png') no-repeat;
 		background-size: 18px;
 	}
-}
-
-
-.btn {	
-	margin: 0;
-	display: inline-block;
-	position: absolute;
-	font-weight: bold;
-	text-decoration: none;
-}
-
-.btn-small {
-	@include gradientbg(#555, #383838, top);
-	font-size: 12.5px;
-	@include boxshadow(1px, 1px, 0px, rgba(255,255,255,0.1));
-	border: 1px solid #111;
-	&.pos-right {
-		right: 0.6em;
-	}
-		span {
-			display: block;
-			padding: 0.55em 1em 0.5em;
-			border-top: 1px solid rgba(255,255,255,0.3);
-			border-left: 1px solid rgba(255,255,255,0.1);
-			text-shadow: #111 0px 1px 1px;
-		}
 }

@@ -14,7 +14,27 @@
 }
 
 @mixin boxshadow($h, $v, $blur, $color) {
-	-moz-box-shadow: $h $v $blur $color; /* Firefox */
-	-webkit-box-shadow: $h $v $blur $color; /* Safari, Chrome */
-	box-shadow: $h $v $blur $color; /* CSS3 */
+	-moz-box-shadow: $h $v $blur $color;
+	-webkit-box-shadow: $h $v $blur $color;
+	box-shadow: $h $v $blur $color;
+}
+
+@mixin button($position) {
+	@extend .btn-prep;
+	@include gradientbg(#555, #383838, top);
+	@include boxshadow(1px, 1px, 0px, rgba(255,255,255,0.1));
+	font-size: 12.5px;
+	border: 1px solid #111;
+	@if $position == right {
+		right: 0.6em;
+	} @else if $position == left {
+		left: 0.6em;
+	}
+		span {
+			display: block;
+			padding: 0.55em 1em 0.5em;
+			border-top: 1px solid rgba(255,255,255,0.3);
+			border-left: 1px solid rgba(255,255,255,0.1);
+			text-shadow: #111 0px 1px 1px;
+		}
 }
