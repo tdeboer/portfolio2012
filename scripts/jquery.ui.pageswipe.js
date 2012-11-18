@@ -6,11 +6,14 @@ define(['jqui'], function() {
 	
 		var methods = {
 			init : function( options ) {
-				
+			
+				//$(".page").on("click", this.touchStartRecord());
 				/*
 				left
 				position: absolute
 				*/
+				console.log(this);
+				var self = this;
 	
 				return this.each(function(index){
 					$(this).css('position', 'absolute');
@@ -18,6 +21,8 @@ define(['jqui'], function() {
 					$(this).css('left', left+'px');
 					$(window).bind('resize.tooltip', methods.reposition);
 				});
+				
+				
 	
 			},
 			destroy : function( ) {
@@ -29,6 +34,11 @@ define(['jqui'], function() {
 		};
 	
 		$.fn.pageswipe = function( method ) {
+		
+			var track = {}
+		
+			$(".page").on("touchstart", touchStartRecord);
+			$(".page").on("touchend", touchEndRecord);
 	    
 			if ( methods[method] ) {
 				return methods[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
@@ -42,6 +52,19 @@ define(['jqui'], function() {
 				bind
 					touch events
 					window resize
+					*/
+			
+			function touchStartRecord(e) {
+				console.log(e.touches[0].pageX);
+				track.move.start = e.touches[0].pageX;
+			}
+			
+			function touchEndRecord(e) {
+				console.log('stop');
+				alert(track.move.start);
+			}
+					
+					/*
 				
 				methods
 					loadNext
@@ -49,6 +72,8 @@ define(['jqui'], function() {
 						swipeNext
 						swipeBack
 				*/
+				
+				
 	  
 		};
 	
