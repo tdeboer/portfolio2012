@@ -21,5 +21,6 @@ require(["jquery", 'swipe'],
 	function($, swipe) {
 		//$('.page').swipeApp();
 		//swipeApp();
+		
 	}
 );
