@@ -80,28 +80,29 @@ html {
 
 /* line 7, ../sass/screen.scss */
 body {
+  overflow: hidden;
   font-family: Helvetica, Arial, sans-serif;
 }
 
-/* line 11, ../sass/screen.scss */
+/* line 12, ../sass/screen.scss */
 .wrapper {
   overflow: hidden;
   position: absolute;
   top: 3.7em;
   right: 0;
-  bottom: 0;
+  bottom: -100px;
   left: 0;
 }
 
-/* line 20, ../sass/screen.scss */
+/* line 21, ../sass/screen.scss */
 .view {
   white-space: nowrap;
   overflow: hidden;
 }
 
-/* line 25, ../sass/screen.scss */
+/* line 26, ../sass/screen.scss */
 .page {
-  padding: 40px;
+  padding: 40px 40px 80px;
   position: absolute;
   top: 0;
   right: 0;
@@ -121,7 +122,7 @@ body {
 /*
  Header bar
  */
-/* line 48, ../sass/screen.scss */
+/* line 49, ../sass/screen.scss */
 .header {
   zoom: 1;
   line-height: 1em;
@@ -138,24 +139,24 @@ body {
   border-top-color: #3c3c3c;
   border-bottom-color: #111;
 }
-/* line 61, ../sass/screen.scss */
+/* line 62, ../sass/screen.scss */
 .header a {
   color: #fff;
 }
-/* line 64, ../sass/screen.scss */
+/* line 65, ../sass/screen.scss */
 .header h1 {
   font-weight: bold;
   margin: 0.6em 10em 0.6em 2.4em;
   padding: 0;
 }
-/* line 69, ../sass/screen.scss */
+/* line 70, ../sass/screen.scss */
 .header .logo {
   left: 0.6em;
   top: 0.6em;
   width: 18px;
   height: 18px;
 }
-/* line 76, ../sass/screen.scss */
+/* line 77, ../sass/screen.scss */
 .header .btn-about {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #555555), color-stop(100%, #3b3b3b));
   background-image: -webkit-linear-gradient(#555555, #3b3b3b);
@@ -181,18 +182,18 @@ body {
   /* @include single-text-shadow(0px, 1px, 1px, 0px, #111); */
 }
 
-/* line 83, ../sass/screen.scss */
+/* line 84, ../sass/screen.scss */
 nav {
   background-color: #e6e6e6;
   text-align: center;
 }
-/* line 86, ../sass/screen.scss */
+/* line 87, ../sass/screen.scss */
 nav li {
   height: 1em;
   list-style: none;
   display: inline-block;
 }
-/* line 90, ../sass/screen.scss */
+/* line 91, ../sass/screen.scss */
 nav li a {
   display: inline-block;
   width: 8px;
@@ -204,12 +205,12 @@ nav li a {
   border-radius: 4px;
   background-color: #aaa;
 }
-/* line 96, ../sass/screen.scss */
+/* line 97, ../sass/screen.scss */
 nav li a:hover, nav li a.selected {
   background-color: #333;
 }
 
-/* line 103, ../sass/screen.scss */
+/* line 104, ../sass/screen.scss */
 .btn-prep, .header .logo, .header .btn-about {
   margin: 0;
   display: inline-block;
@@ -218,7 +219,7 @@ nav li a:hover, nav li a.selected {
   text-decoration: none;
 }
 
-/* line 111, ../sass/screen.scss */
+/* line 112, ../sass/screen.scss */
 .icon-home {
   padding: 0;
   height: 100%;
@@ -231,13 +232,13 @@ nav li a:hover, nav li a.selected {
 /*
  content
 */
-/* line 124, ../sass/screen.scss */
+/* line 125, ../sass/screen.scss */
 article h1 {
   font-size: 2.625em;
   line-height: 1.14286em;
 }
 
-/* line 128, ../sass/screen.scss */
+/* line 129, ../sass/screen.scss */
 article h2 {
   font-size: 2em;
   line-height: 1.5em;
@@ -250,7 +251,7 @@ article h2 {
  media queries
  */
 @media screen and (-webkit-min-device-pixel-ratio: 2), screen and (max--moz-device-pixel-ratio: 2) {
-  /* line 146, ../sass/screen.scss */
+  /* line 147, ../sass/screen.scss */
   .icon-home {
     background: url("../gfx/logo@2x.png") no-repeat;
     -webkit-background-size: 18px;

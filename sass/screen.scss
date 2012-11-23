@@ -5,6 +5,7 @@
 @import "base";
 
 body {
+	overflow: hidden;
 	font-family: Helvetica, Arial, sans-serif;
 }
 
@@ -13,7 +14,7 @@ body {
 	position: absolute;
 	top: 3.7em;
 	right: 0;
-	bottom: 0;
+	bottom: -100px;
 	left: 0;
 }
 
@@ -23,7 +24,7 @@ body {
 }
 
 .page {
-	padding: 40px;
+	padding: 40px 40px 80px;
 	position: absolute;
 	top: 0;
 	right: 0;
