@@ -19,6 +19,7 @@ require.config({
 
 require(["jquery", 'swipe'], 
 	function($, swipe) {
-		$(".page").pageswipe();
+		//$('.page').swipeApp();
+		//swipeApp();
 	}
 );
