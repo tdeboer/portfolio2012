@@ -1,46 +1,58 @@
-define(['jqui'], function() {
+define(['jqui','events','transit'], function() {
 
 
 	
 	$(function() {
 	
+		var windowWidth;
+	
 		 $.widget( "custom.swipeable", {
+		 	next: null,
+		 	prev: null,
+		 	swipeStart: {},
+            swipeStop: {},
+            pos: null,
+		 	
             // default options
             options: {
-                red: 255,
-                green: 0,
-                blue: 0,
- 
                 // callbacks
                 change: null,
                 random: null,
                 selector: '.page',
-                swipeStart: {},
-                swipeStop: {},
-                test: 0,
-                windowWidth: null,
-                scrollSupressionThreshold: 100, // More than this horizontal displacement, and we will suppress scrolling.
-                durationThreshold: 1000, // More time than this, and it isn't a swipe.
-                horizontalDistanceThreshold: 30,  // Swipe horizontal displacement must be more than this.
-                verticalDistanceThreshold: 75
+                scrollSupressionThreshold: 20, // More than this horizontal displacement, and we will suppress scrolling.
+                swipeThreshold: 100,  // Swipe horizontal displacement must be more than this to go to next page
+                verticalDistanceThreshold: 40, // Swipe vertical displacement must be less than this.
+                slideInAction: false,
+                swipeBoundry: 40, // Stop the swipe at this point if there is nothing to swipe to
+                disableSwipe: false,
+                scrolling: false,
+                timer: null
             },
  
             // the constructor
             _create: function() {
                 var $el = this.element;
-                
+
                 padding = parseInt( $el.css('padding-left') );
                 windowWidth = $(window).width();
                 $el.width( windowWidth-(2*padding) );
-                this.options.windowWidth = windowWidth;
+                this.next = $el.next('.page');
+                this.prev = $el.prev('.page');
                 
                 // Hide all pages except the first.
-                // Not with css for the javascript-frightened people.
-                if (!$el.prev('.page').length) {
-	                $el.data('order', 'first');
+                // Not with css so with javascript disabled the pages are still available
+                if (!this.prev.length) {
+	                //$el.data('order', 'first');
+	                this.pos = 'first';
+	                $el.addClass('current');
                 } else {
 	                $el.css('display', 'none');
-	                $el.css('left', windowWidth+'px');
+	                //$el.css('left', windowWidth+'px');  //!transit
+	                $el.transition({ x: windowWidth + "px" }, 0); // possible with css({}) ?
+	                if (!this.next.length) {
+	                	//$el.data('order', 'last');
+	                	this.pos = 'last';
+	                }
                 }
                 
                 
@@ -50,90 +62,118 @@ define(['jqui'], function() {
 	                $el.data('content', true);
 	            }
 
-                // jqm only for this?
                 this._on({
                 	touchstart: "_touchStart",
                 	touchmove: "_touchMove",
-                	touchend: "_touchEnd"
+                	touchend: "_touchEnd",
+                	scrollstop: "_scroll"
                 });
             },
  
             // called when created, and later when changing options
             _touchStart: function(event) {
-            	// show next or previous page
-            	this.element.next('.page').show();
+            	this.next.show();
+            	this.prev.show();
 
-            	// record starting point of the swipe
+            	// set starting point of the potential swipe
             	var data = event.originalEvent.touches[0];
-            	            	
-            	this.options.swipeStart = {
+            	// use var instead of options!
+            	this.swipeStart = {
 					coords: [ data.pageX, data.pageY ]
 				};
-
-            	//$('.debug').text(event.originalEvent.touches[0].pageX);
             },
             
+            // todo: 	- use a touch library
+            //			- make independent plugin and add listener to the swipe
             _touchMove: function(event) {
-                var data = event.originalEvent.touches[0],
-				start = this.options.swipeStart;
-				
-				
-				
-				this.options.swipeStop = {
-					coords: [ data.pageX, data.pageY ]
-				};
-				
-				end = this.options.swipeStop;
+	            var $el = this.element;
+                var data = event.originalEvent.touches[0];
+				var start = this.swipeStart;
+				var current = { coords: [ data.pageX, data.pageY ] };
+                var diffX = start.coords[0] - current.coords[0];
+                var diffY = start.coords[1] - current.coords[1];
+                //$('.debug').text(this.options.slideInAction);
                 
-                diff = start.coords[0] - end.coords[0];
-                //diffAbs = Math.abs(start - end);
-                
-                // move pages
-                newPos = 0 - diff;
-                this.element.css('left', newPos + 'px');
-                var posLeft = this.options.windowWidth - diff;
-                this.element.next('.page').css('left', posLeft + 'px');
-                
-                // prevent scrolling
-				if ( Math.abs( start.coords[1] - end.coords[1] ) > this.options.scrollSupressionThreshold ) {
-					event.preventDefault();
-				}
+                // bug: when scrolled to top of page and bounced back: "Uncaught TypeError: Cannot set property 'scrolling' of undefined"
+                if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold && !this.options.scrolling) || this.options.slideInAction ) {
+	                event.preventDefault();
+                	diffX = start.coords[0] - current.coords[0];
+                	
+	                this.options.slideInAction = true;
+	                var newPos = -1* diffX;
+	                //$el.css('left', newPos + 'px'); // 'px' needed? //!transit
+	                $el.transition({ x: newPos }, 0);
+	                var newNextPosTrans = windowWidth - diffX;
+	                var newPrevPosTrans = -1*windowWidth - diffX;
+	                //var newNextPos = this.options.windowWidth - diff; //!transit
+	                //$next.css('left', newNextPos + 'px'); // todo: previous //!transit
+	                $next.transition({ x: newNextPosTrans }, 0);
+	                $prev.transition({ x: newPrevPosTrans }, 0);
+	                this.swipeStop = current;
+                }
             },
             
             _touchEnd: function(event) {
-	            var $el = this.element;
-	            
-	            /*
-	            if (this.options.test == 1) {
-	                console.log('_touchStart');
-	                //alert('_touchStart');
-	                $el.hide();
-	                if ($el.next().length) {
-		                $el.next('.page').show();
-	               } else {
-		               $el.prev('.page').show();
-	               }
-                }
-                this.options.test ++;
-                */
-                
-                start = this.options.swipeStart;
-                end = this.options.swipeStop;
-            	diffAbs = Math.abs(start.coords[0] - end.coords[0]);
+            	this.options.scrolling = false;
+	            var start = this.swipeStart;
+                var end = this.swipeStop;
+            	var diff = start.coords[0] - end.coords[0];
+            	var $el = this.element;
+            	this.options.slideInAction = false;
 
-            	// snap!
-            	if (diffAbs > this.options.horizontalDistanceThreshold){
-	            	//alert('snap');
-	            	newPos = 0 - this.options.windowWidth;
-	            	this.element.css('left', newPos + 'px');
-	            	this.element.next('.page').css('left', '0px');
+            	// snap to point
+            	// todo: modernizr check
+            	if (Math.abs(diff) > this.options.swipeThreshold){
+	            	if (diff > 0 && this.pos != 'last') {
+	            		// swipe left
+	            		newPos = -1*windowWidth;
+	            		$el.transition({ x: newPos });
+		            	this.next.transition({ x: '0px' });
+	            	} else if (diff < 0 && this.pos != 'first') {
+		            	// swipe right
+		            	newPos = windowWidth;
+	            		$el.transition({ x: newPos });
+		            	this.prev.transition({ x: '0px' });
+		            	
+		            	/* !transit
+		            	newPos = this.options.windowWidth;
+		            	$el.css('left', newPos + 'px');
+		            	$el.prev('.page').css('left', '0px');
+		            	*/
+	            	} else {
+		            	// no page available -> bounce back
+		            	this.bounceBack();
+	            	}
+            	} else {
+	            	// not enough swipe -> bounce back
+	            	this.bounceBack();
             	}
-                
-                
-                // unset swipeStop
-                this.options.swipeStart = {};
-                this.options.swipeStop = {};
-                
+            },
+            
+            
+            _scroll: function(event) {
+            	// emulate scrollEnd event -> better copy jquery mobile scrollstop
+            	this.options.scrolling = false;
+	            /*
+this.options.scrolling = true;
+	            clearTimeout(this.options.timer);
+		        this.options.timer = setTimeout( this._refresh , 150 );
+*/
+            },
+            
+            /*
+_refresh: function() {
+            	console.log(this);
+	            this.options.scrolling = false;
+            },
+*/
+            
+            bounceBack: function() {
+	            this.element.transition({ x: "0" });
+            	this.next.transition({ x: windowWidth });
+            	this.prev.transition({ x: -1*windowWidth });
+            	
+            	//var t=setTimeout(function(){ $('.debug').text( $el.next('.page').css('x') ) },3000); // debug
             },
  
             // a public method to change the color to a random value
@@ -185,6 +225,39 @@ define(['jqui'], function() {
         
          $( ".page" ).swipeable();
         
+	});
+	
+	
+	
+	
+	// Special page outside the swipe interaction
+	$('.btn-about').click(function(event) {
+		event.preventDefault();
+		
+		// show about-page
+		$('.special-page').show();
+		
+		
+		$('.special-page').css({
+			perspective: '1000px',
+			rotateY: '-90deg'
+		});
+		
+		// animate current page
+		// todo: ease back (Vera's slides)
+		$('.page.current').transition({
+			perspective: '1000px',
+			rotateY: '90deg'
+		}, 400, 'linear', function() {
+			// animate about-page
+			$('.special-page').transition({
+				perspective: '1000px',
+				rotateY: '0deg'
+			}, 400, 'linear');	
+		});
+		
+		
+		
 	});
 	
 	

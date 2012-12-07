@@ -5,8 +5,9 @@ require.config({
 	optimize: "none",
 	paths: {
 		"jqm": "jquery.mobile",
-		"jqui":	"jquery-ui-1.9.1.custom.min",
-		"swipe": "jquery.ui.pageswipe"
+		"jqui":	"jquery-ui-1.9.2.custom.min",
+		"swipe": "jquery.ui.pageswipe",
+		"events": "jquery.custom.events"
 	},
 	modules: [
         {

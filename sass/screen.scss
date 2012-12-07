@@ -14,7 +14,7 @@ body {
 	position: absolute;
 	top: 3.7em;
 	right: 0;
-	bottom: -100px;
+	bottom: 0;
 	left: 0;
 }
 
@@ -23,8 +23,9 @@ body {
 	overflow: hidden;
 }
 
-.page {
-	padding: 40px 40px 80px;
+.page,
+.special-page {
+	padding: 40px;
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -41,6 +42,17 @@ body {
 	/* @include debug-vertical-alignment; */
 }
 
+.special-page {
+	display: none;
+}
+
+#project1 {
+	z-index: 10;
+}
+
+#project2 {
+	background-color: purple;
+}
 
 /*
  Header bar
