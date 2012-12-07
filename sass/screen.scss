@@ -1,44 +1,28 @@
-/* Welcome to Compass.
- * In this file you should write your main styles. (or centralize your imports)
- * Import this file using the following HTML or equivalent:
- * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
 @import "base";
-
-body {
-	overflow: hidden;
-	font-family: Helvetica, Arial, sans-serif;
+html {
+	overflow-x: hidden;
 }
 
-.wrapper {
-	overflow: hidden;
-	position: absolute;
-	top: 3.7em;
-	right: 0;
-	bottom: 0;
-	left: 0;
+body {
+	font-family: Helvetica, Arial, sans-serif;
+	overflow-x: hidden;
 }
 
 .view {
 	white-space: nowrap;
-	overflow: hidden;
+	overflow-x: hidden;
 }
 
 .page,
 .special-page {
 	padding: 40px;
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
 	background-color: teal;
 	display: inline-block;
 	white-space: normal;
 	vertical-align: top;
 	font-size: 12px;
 	line-height: 18px;
-	overflow-y: scroll;
-	-webkit-overflow-scrolling: touch;
+	position: absolute;
 	/* @include debug-vertical-alignment; */
 }
 
@@ -47,7 +31,6 @@ body {
 }
 
 #project1 {
-	z-index: 10;
 }
 
 #project2 {

@@ -1,6 +1,11 @@
 define(['jqui','events','transit'], function() {
 
-
+	/*
+	todo:
+	- call widget lik this: $('wrapper').swipeable({ options });
+	- make independent plugin and add listener to the swipe
+	- use var instead of options
+	*/
 	
 	$(function() {
 	
@@ -70,10 +75,11 @@ define(['jqui','events','transit'], function() {
                 });
             },
  
-            // called when created, and later when changing options
             _touchStart: function(event) {
-            	this.next.show();
+	            this.next.show();
+            	this.next.find('article').show();
             	this.prev.show();
+            	this.prev.find('article').show();
 
             	// set starting point of the potential swipe
             	var data = event.originalEvent.touches[0];
@@ -83,8 +89,6 @@ define(['jqui','events','transit'], function() {
 				};
             },
             
-            // todo: 	- use a touch library
-            //			- make independent plugin and add listener to the swipe
             _touchMove: function(event) {
 	            var $el = this.element;
                 var data = event.originalEvent.touches[0];
@@ -98,7 +102,7 @@ define(['jqui','events','transit'], function() {
                 if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold && !this.options.scrolling) || this.options.slideInAction ) {
 	                event.preventDefault();
                 	diffX = start.coords[0] - current.coords[0];
-                	
+               	
 	                this.options.slideInAction = true;
 	                var newPos = -1* diffX;
 	                //$el.css('left', newPos + 'px'); // 'px' needed? //!transit
@@ -107,8 +111,8 @@ define(['jqui','events','transit'], function() {
 	                var newPrevPosTrans = -1*windowWidth - diffX;
 	                //var newNextPos = this.options.windowWidth - diff; //!transit
 	                //$next.css('left', newNextPos + 'px'); // todo: previous //!transit
-	                $next.transition({ x: newNextPosTrans }, 0);
-	                $prev.transition({ x: newPrevPosTrans }, 0);
+	                this.next.css({ x: newNextPosTrans });
+	                this.prev.css({ x: newPrevPosTrans });
 	                this.swipeStop = current;
                 }
             },
@@ -125,15 +129,20 @@ define(['jqui','events','transit'], function() {
             	// todo: modernizr check
             	if (Math.abs(diff) > this.options.swipeThreshold){
 	            	if (diff > 0 && this.pos != 'last') {
-	            		// swipe left
+	            		// swipe to next
 	            		newPos = -1*windowWidth;
 	            		$el.transition({ x: newPos });
-		            	this.next.transition({ x: '0px' });
+		            	this.next.transition({ x: '0px' }, function() {
+			            	$el.find('article').hide(); // since the pages are positioned absolute, the child element have to be hidden for the document height to be updated and therefore also the scrollbar
+		            	});
 	            	} else if (diff < 0 && this.pos != 'first') {
-		            	// swipe right
+		            	// swipe to previous
 		            	newPos = windowWidth;
 	            		$el.transition({ x: newPos });
-		            	this.prev.transition({ x: '0px' });
+		            	this.prev.transition({ x: '0px' }, function() {
+			            	$el.find('article').hide();	
+		            	});
+		            	
 		            	
 		            	/* !transit
 		            	newPos = this.options.windowWidth;
@@ -172,7 +181,8 @@ _refresh: function() {
 	            this.element.transition({ x: "0" });
             	this.next.transition({ x: windowWidth });
             	this.prev.transition({ x: -1*windowWidth });
-            	
+            	this.next.css('display', 'none');
+            	this.prev.css('display', 'none');
             	//var t=setTimeout(function(){ $('.debug').text( $el.next('.page').css('x') ) },3000); // debug
             },
  
