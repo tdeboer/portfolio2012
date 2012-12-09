@@ -1,16 +1,11 @@
 @import "base";
-html {
-	overflow-x: hidden;
-}
-
 body {
 	font-family: Helvetica, Arial, sans-serif;
-	overflow-x: hidden;
 }
 
 .view {
 	white-space: nowrap;
-	overflow-x: hidden;
+	overflow: hidden;
 }
 
 .page,
@@ -22,7 +17,7 @@ body {
 	vertical-align: top;
 	font-size: 12px;
 	line-height: 18px;
-	position: absolute;
+	position: relative;
 	/* @include debug-vertical-alignment; */
 }
 
@@ -31,6 +26,7 @@ body {
 }
 
 #project1 {
+	z-index: 10;
 }
 
 #project2 {

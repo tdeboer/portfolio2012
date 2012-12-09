@@ -47,15 +47,12 @@ define(['jqui','events','transit'], function() {
                 // Hide all pages except the first.
                 // Not with css so with javascript disabled the pages are still available
                 if (!this.prev.length) {
-	                //$el.data('order', 'first');
 	                this.pos = 'first';
 	                $el.addClass('current');
                 } else {
 	                $el.css('display', 'none');
-	                //$el.css('left', windowWidth+'px');  //!transit
-	                $el.transition({ x: windowWidth + "px" }, 0); // possible with css({}) ?
+	                $el.css({ x: 0 });
 	                if (!this.next.length) {
-	                	//$el.data('order', 'last');
 	                	this.pos = 'last';
 	                }
                 }
@@ -77,7 +74,7 @@ define(['jqui','events','transit'], function() {
  
             _touchStart: function(event) {
 	            this.next.show();
-            	this.next.find('article').show();
+            	this.next.find('article').show(); // to make sure the parent .page doesn't influence the document size
             	this.prev.show();
             	this.prev.find('article').show();
 
@@ -96,23 +93,16 @@ define(['jqui','events','transit'], function() {
 				var current = { coords: [ data.pageX, data.pageY ] };
                 var diffX = start.coords[0] - current.coords[0];
                 var diffY = start.coords[1] - current.coords[1];
-                //$('.debug').text(this.options.slideInAction);
                 
-                // bug: when scrolled to top of page and bounced back: "Uncaught TypeError: Cannot set property 'scrolling' of undefined"
                 if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold && !this.options.scrolling) || this.options.slideInAction ) {
 	                event.preventDefault();
                 	diffX = start.coords[0] - current.coords[0];
                	
 	                this.options.slideInAction = true;
 	                var newPos = -1* diffX;
-	                //$el.css('left', newPos + 'px'); // 'px' needed? //!transit
-	                $el.transition({ x: newPos }, 0);
-	                var newNextPosTrans = windowWidth - diffX;
-	                var newPrevPosTrans = -1*windowWidth - diffX;
-	                //var newNextPos = this.options.windowWidth - diff; //!transit
-	                //$next.css('left', newNextPos + 'px'); // todo: previous //!transit
-	                this.next.css({ x: newNextPosTrans });
-	                this.prev.css({ x: newPrevPosTrans });
+	                $el.css({ x: newPos });
+	                this.next.css({ x: newPos });
+	                this.prev.css({ x: newPos });
 	                this.swipeStop = current;
                 }
             },
@@ -132,7 +122,7 @@ define(['jqui','events','transit'], function() {
 	            		// swipe to next
 	            		newPos = -1*windowWidth;
 	            		$el.transition({ x: newPos });
-		            	this.next.transition({ x: '0px' }, function() {
+		            	this.next.transition({ x: newPos }, function() {
 			            	$el.find('article').hide(); // since the pages are positioned absolute, the child element have to be hidden for the document height to be updated and therefore also the scrollbar
 		            	});
 	            	} else if (diff < 0 && this.pos != 'first') {
@@ -142,13 +132,6 @@ define(['jqui','events','transit'], function() {
 		            	this.prev.transition({ x: '0px' }, function() {
 			            	$el.find('article').hide();	
 		            	});
-		            	
-		            	
-		            	/* !transit
-		            	newPos = this.options.windowWidth;
-		            	$el.css('left', newPos + 'px');
-		            	$el.prev('.page').css('left', '0px');
-		            	*/
 	            	} else {
 		            	// no page available -> bounce back
 		            	this.bounceBack();
@@ -161,21 +144,8 @@ define(['jqui','events','transit'], function() {
             
             
             _scroll: function(event) {
-            	// emulate scrollEnd event -> better copy jquery mobile scrollstop
             	this.options.scrolling = false;
-	            /*
-this.options.scrolling = true;
-	            clearTimeout(this.options.timer);
-		        this.options.timer = setTimeout( this._refresh , 150 );
-*/
             },
-            
-            /*
-_refresh: function() {
-            	console.log(this);
-	            this.options.scrolling = false;
-            },
-*/
             
             bounceBack: function() {
 	            this.element.transition({ x: "0" });
@@ -183,52 +153,8 @@ _refresh: function() {
             	this.prev.transition({ x: -1*windowWidth });
             	this.next.css('display', 'none');
             	this.prev.css('display', 'none');
-            	//var t=setTimeout(function(){ $('.debug').text( $el.next('.page').css('x') ) },3000); // debug
-            },
- 
-            // a public method to change the color to a random value
-            // can be called directly via .colorize( "random" )
-            random: function( event ) {
-                var colors = {
-                    red: Math.floor( Math.random() * 256 ),
-                    green: Math.floor( Math.random() * 256 ),
-                    blue: Math.floor( Math.random() * 256 )
-                };
- 
-                // trigger an event, check if it's canceled
-                if ( this._trigger( "random", event, colors ) !== false ) {
-                    this.option( colors );
-                }
-            },
- 
-            // events bound via _on are removed automatically
-            // revert other modifications here
-            _destroy: function() {
-                // remove generated elements
-                this.changer.remove();
- 
-                this.element
-                    .removeClass( "custom-colorize" )
-                    .enableSelection()
-                    .css( "background-color", "transparent" );
-            },
- 
-            // _setOptions is called with a hash of all options that are changing
-            // always refresh when changing options
-            _setOptions: function() {
-                // _super and _superApply handle keeping the right this-context
-                this._superApply( arguments );
-                this._refresh();
-            },
- 
-            // _setOption is called for each individual option that is changing
-            _setOption: function( key, value ) {
-                // prevent invalid color values
-                if ( /red|green|blue/.test(key) && (value < 0 || value > 255) ) {
-                    return;
-                }
-                this._super( key, value );
             }
+             
         });
         
         
@@ -270,6 +196,6 @@ _refresh: function() {
 		
 	});
 	
-	
+
 	
 });
