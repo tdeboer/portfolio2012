@@ -100,9 +100,7 @@ define(['jqui','events','transit'], function() {
                	
 	                this.options.slideInAction = true;
 	                var newPos = -1* diffX;
-	                $el.css({ x: newPos });
-	                this.next.css({ x: newPos });
-	                this.prev.css({ x: newPos });
+	                $el.add(this.next).add(this.prev).css({ x: newPos });
 	                this.swipeStop = current;
                 }
             },
@@ -121,8 +119,7 @@ define(['jqui','events','transit'], function() {
 	            	if (diff > 0 && this.pos != 'last') {
 	            		// swipe to next
 	            		newPos = -1*windowWidth;
-	            		$el.transition({ x: newPos });
-		            	this.next.transition({ x: newPos }, function() {
+	            		$el.add(this.next).transition({ x: newPos }, function() {
 			            	$el.find('article').hide(); // since the pages are positioned absolute, the child element have to be hidden for the document height to be updated and therefore also the scrollbar
 		            	});
 	            	} else if (diff < 0 && this.pos != 'first') {
