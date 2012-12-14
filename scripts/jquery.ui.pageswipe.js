@@ -147,12 +147,13 @@ define(['jqui','events','transit'], function() {
 		            		newPos = this.curPos - windowWidth;
 		            		$el.transition({ x: newPos }, function() {
 		            			slideAnimating = false;
-		            			//this.options.slideAnimating = false;alert('1');
-				            	//this.currrent.find('article').hide(); // since the pages are positioned absolute, the child element have to be hidden for the document height to be updated and therefore also the scrollbar
+				            	this.currrent.find('article').hide(); // since the pages are positioned absolute, the child element have to be hidden for the document height to be updated and therefore also the scrollbar
+				            	this.currrent.hide();
+				            	this.prev = this.current;
+				            	this.current = this.current.next();
+				                this.next = this.next.next();
 			            	});
-			            	this.prev = this.current;
-			            	this.current = this.current.next();
-			                this.next = this.next.next();
+			            	
 		            	} else if (diff < 0 && this.prev.length) {
 			            	// swipe to previous
 			            	newPos = this.curPos + windowWidth;
@@ -218,23 +219,23 @@ define(['jqui','events','transit'], function() {
 		event.preventDefault();
 		
 		// show about-page
-		$('.special-page').show();
+		$('.special-page').css('display', 'inline-block');
 		
 		
 		$('.special-page').css({
-			perspective: '1000px',
+			perspective: '6000px',
 			rotateY: '-90deg'
 		});
 		
 		// animate current page
 		// todo: ease back (Vera's slides)
-		$('.page.current').transition({
-			perspective: '1000px',
+		$('.front').transition({
+			perspective: '6000px',
 			rotateY: '90deg'
 		}, 400, 'linear', function() {
 			// animate about-page
 			$('.special-page').transition({
-				perspective: '1000px',
+				perspective: '6000px',
 				rotateY: '0deg'
 			}, 400, 'linear');	
 		});
