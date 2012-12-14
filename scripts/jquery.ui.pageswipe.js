@@ -11,6 +11,8 @@ define(['jqui','events','transit'], function() {
 	$(function() {
 	
 		var windowWidth;
+		var scr = false;
+		var slideAnimating = false;
 	
 		 $.widget( "custom.swipeable", {
 		 	current: null,
@@ -30,8 +32,7 @@ define(['jqui','events','transit'], function() {
                 scrollSupressionThreshold: 20, // More than this horizontal displacement, and we will suppress scrolling.
                 swipeThreshold: 100,  // Swipe horizontal displacement must be more than this to go to next page
                 verticalDistanceThreshold: 60, // Swipe vertical displacement must be less than this.
-                slideInAction: false,
-                slideAnimating: false,
+                sliding: false,
                 swipeBoundry: 40, // Stop the swipe at this point if there is nothing to swipe to
                 disableSwipe: false,
                 scrolling: false,
@@ -41,7 +42,6 @@ define(['jqui','events','transit'], function() {
             // the constructor
             _create: function() {
                 var $el = this.element;
-                var that = this;
                 this.current = $el.children().first();
                 this.next = $el.children().first().next();
                 this.prev = $el.children().first().prev();
@@ -67,9 +67,10 @@ define(['jqui','events','transit'], function() {
                 	touchstart: "_touchStart",
                 	touchmove: "_touchMove",
                 	touchend: "_touchEnd",
-                	scrollstart: "_scrollStart",
-                	scrollstop: "_scrollStop"
+                	scrollstart: "_scrollStart"
                 });
+                
+                $(window).bind('scrollstop', this._scrollStop);
             },
  
             _touchStart: function(event) {
@@ -97,33 +98,46 @@ define(['jqui','events','transit'], function() {
 				var current = { coords: [ data.pageX, data.pageY ] };
                 var diffX = start.coords[0] - current.coords[0];
                 var diffY = start.coords[1] - current.coords[1];
-                //$('.debug').text(this.options.slideAnimating);
+                //$('.debug').text(slideAnimating);
                 
-                if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold && !this.options.scrolling && !this.options.slideAnimating) || this.options.slideInAction ) {
+                if (!slideAnimating) {
+	               
+	                if (!scr) {
+		                if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold) || this.options.sliding ) {
+			                event.preventDefault();
+		                	diffX = start.coords[0] - current.coords[0];
+		               	
+			                this.options.sliding = true;
+			                var newPos = this.curPos - diffX;
+			                $el.css({ x: newPos });
+			                this.swipeStop = current;
+		                } else if (Math.abs(diffY) >= 5) {
+			                scr = true;
+		                }
+	                }
+	                
+                } else {
+                
+                	// prevent scroll because an animation is running
 	                event.preventDefault();
-                	diffX = start.coords[0] - current.coords[0];
-               	
-	                this.options.slideInAction = true;
-	                var newPos = this.curPos - diffX;
-	                $el.css({ x: newPos });
-	                this.swipeStop = current;
-                } else if (Math.abs(diffY) >= 20) {
-	                this.options.scrolling = true;
+	                
                 }
+                
+                
+                
             },
             
             _touchEnd: function(event) {
             	// check if a swipe action occured
-            	if (this.options.slideInAction) {
+            	if (this.options.sliding && !slideAnimating) {
             	
-	            	this.options.scrolling = false;
+	            	scr = false;
 		            var start = this.swipeStart;
 	                var end = this.swipeStop;
 	            	var diff = start.coords[0] - end.coords[0];
 	            	var $el = this.element;
-	            	this.options.slideInAction = false;
-	            	this.options.slideAnimating = true;
-	            	var that = this;
+	            	this.options.sliding = false;
+	            	slideAnimating = true;
 	            	//$('.debug').text(Math.abs(diff));
 	
 	            	// snap to point
@@ -132,7 +146,7 @@ define(['jqui','events','transit'], function() {
 		            		// swipe to next
 		            		newPos = this.curPos - windowWidth;
 		            		$el.transition({ x: newPos }, function() {
-		            			that.options.slideAnimating = false;
+		            			slideAnimating = false;
 		            			//this.options.slideAnimating = false;alert('1');
 				            	//this.currrent.find('article').hide(); // since the pages are positioned absolute, the child element have to be hidden for the document height to be updated and therefore also the scrollbar
 			            	});
@@ -143,7 +157,7 @@ define(['jqui','events','transit'], function() {
 			            	// swipe to previous
 			            	newPos = this.curPos + windowWidth;
 		            		$el.transition({ x: newPos }, function() {
-			            		that.options.slideAnimating = false;
+			            		slideAnimating = false;
 		            		});
 			            	/*
 				            	this.prev.transition({ x: '0px' }, function() {
@@ -166,20 +180,19 @@ define(['jqui','events','transit'], function() {
             },
             
             _scrollStart: function(event) {
-            	//this.options.scrolling = true; // Get's called even befor the user actually scrolls
+            	//scr = true; // Get's called even befor the user actually scrolls
             },
             
             _scrollStop: function(event) {
-            	this.options.scrolling = false;
+            	scr = false;
             },
             
             // todo: busy when animating
             bounceBack: function() {
-            	var that = this;
 	            //this.element.transition({ x: "0" });
 
 	            this.element.transition({ x: this.curPos }, function(){
-		            that.options.slideAnimating = false;
+		            slideAnimating = false;
 	            });
 	            
             	/*
