@@ -3,6 +3,13 @@ body {
 	font-family: Helvetica, Arial, sans-serif;
 }
 
+a {
+	color: #000;
+	&:hover, &:focus {
+		color: #000;
+	}
+}
+
 .front {
 	-webkit-transform: translateZ(0);
 }
@@ -13,7 +20,7 @@ body {
 }
 
 .page,
-.special-page {
+.special-page article {
 	padding: 40px;
 	background-color: teal;
 	display: inline-block;
@@ -28,7 +35,7 @@ body {
 
 .special-page {
 	position: absolute;
-	top: 0;
+	top: 0em;
 	display: none;
 }
 
@@ -72,7 +79,7 @@ body {
 			width: 18px;
 			height: 18px;
 		}
-		.btn-about {
+		.btn-about, .btn-back {
 			@include button(right, #555);
 			top: 0.3em;
 		}
@@ -92,9 +99,9 @@ nav {
 			height: 8px;
 			@include border-radius(4px);
 			background-color: #aaa;
-			&:hover, &.selected {
-				background-color: #333;
-			}
+		}
+		&.selected a {
+			background-color: #333;
 		}
 	}
 }
@@ -107,7 +114,7 @@ nav {
 	text-decoration: none;
 }
 
-.icon-home {
+.home-icon {
 	padding: 0;
 	height: 100%;
 	background: url('../gfx/logo.png') no-repeat;
@@ -129,6 +136,22 @@ article h2 {
 }
 
 
+.personal-links li {
+	@extend %button-list-item;
+	@include adjust-font-size-to(22px);
+	background-color: #000;
+	color: #fff;
+	a {
+		color: #fff;
+		text-decoration: none;
+		&:hover, &:focus {
+			color: #fff;
+		}
+	}
+}
+
+
+
 /*
  footer
 */
@@ -142,7 +165,7 @@ footer ul {
  */
 
 @media screen and (-webkit-min-device-pixel-ratio: 2), screen and (max--moz-device-pixel-ratio: 2) {
-	.icon-home {
+	.home-icon {
 		background: url('../gfx/logo@2x.png') no-repeat;
 		@include background-size(18px);
 	}

@@ -6,6 +6,8 @@ css_dir = "css"
 sass_dir = "sass"
 images_dir = "gfx"
 javascripts_dir = "scripts"
+fonts_dir = "fonts"
+relative_assets = true
 
 # You can select your preferred output style here (can be overridden via the command line):
 # output_style = :expanded or :nested or :compact or :compressed

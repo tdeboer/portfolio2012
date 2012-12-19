@@ -3,6 +3,7 @@ $base-line-height: 24px;
 
 @import "compass";
 @import "compass/reset";
+@import "font-awesome";
 @include establish-baseline;
 
 
@@ -32,4 +33,24 @@ $base-line-height: 24px;
 			text-shadow: $shade 0px 1px 1px;
 			/* @include single-text-shadow(0px, 1px, 1px, 0px, #111); */
 		}
+}
+
+
+%button-list-item {
+	margin-bottom: 3px;
+	@include border-radius(4px, 4px);
+	@include background-image(linear-gradient(#3C3C3C, #111));
+	border: {
+		style: solid;
+		width: 1px;
+		color: #3c3c3c;
+	}
+	a {
+		padding: 0.5em 0.2em 0.5em 0;
+		display: block;
+	}
+	.icon {
+		font-size: 48px;
+		vertical-align: middle;
+	}
 }

@@ -10,14 +10,15 @@ define(['jqui','events','transit'], function() {
 	
 	$(function() {
 	
-		var windowWidth;
-		var scr = false;
-		var slideAnimating = false;
+		var windowWidth,
+			scr = false,
+			slideAnimating = false,
+			current, // current page
+		 	next, // next page
+		 	prev, // previous page
+		 	nav;
 	
 		 $.widget( "custom.swipeable", {
-		 	current: null,
-		 	next: null,
-		 	prev: null,
 		 	swipeStart: {},
             swipeStop: {},
             pos: null,
@@ -25,10 +26,8 @@ define(['jqui','events','transit'], function() {
 		 	
             // default options
             options: {
-                // callbacks
-                change: null,
-                random: null,
                 selector: '.page',
+                navSelector: 'nav',
                 scrollSupressionThreshold: 20, // More than this horizontal displacement, and we will suppress scrolling.
                 swipeThreshold: 100,  // Swipe horizontal displacement must be more than this to go to next page
                 verticalDistanceThreshold: 60, // Swipe vertical displacement must be less than this.
@@ -42,25 +41,47 @@ define(['jqui','events','transit'], function() {
             // the constructor
             _create: function() {
                 var $el = this.element;
-                this.current = $el.children().first();
-                this.next = $el.children().first().next();
-                this.prev = $el.children().first().prev();
-                windowWidth = $(window).width();
+                current = $el.children().first();
+                next = $el.children().first().next();
+                prev = $el.children().first().prev();
+                windowWidth = $(window).width() - 40;
+                nav = $(this.options.navSelector);
                 
                 // setup all pages
                 $el.children().each(function() {
 	                var $page = $(this);
 	                var padding = parseInt( $page.css('padding-left') );
 	                $page.width( windowWidth-(2*padding) );
-	               // $page.css('display', 'none'); // Hide all pages except the first. Not with css so with javascript disabled the pages are still available
+	                $page.find('article').css('display', 'none'); // Hide all pages except the first. Not with css so with javascript disabled the pages are still available
 	                if ($page.is(':empty')) {
 		                $page.data('content', false);
 	                }
+	                
+	                // add navigation
+	                /*
+	                navEl = $('<li><a></a></li>');
+					navEl.find('a').attr({
+						href: '#'+$page.attr('id'),
+						alt: $page.attr('id')
+					});
+	                nav.append(navEl);
+	                */
                 });
                 
                 // Good to know what page is first and last when handling the swipe
-                $el.children().first().show().data('first');
+                $el.children().first().data('first');
                 $el.children().last().data('last');
+                
+                $el.children().first().find('article').show();
+                nav.find('li:first').addClass('selected');
+                
+                // css .shadow so it won't influence size of scrollbar: max-height or bottom: 0
+                var shadowEl = $('<div></div>');
+            	shadowEl.attr('class', 'shadow-next');
+            	next.find('article').clone().appendTo(shadowEl);
+            	shadowEl.find('article').css('display', 'inline-block');
+            	next.append(shadowEl);
+            	
 
                 // bind all listeners
                 this._on({
@@ -69,26 +90,22 @@ define(['jqui','events','transit'], function() {
                 	touchend: "_touchEnd",
                 	scrollstart: "_scrollStart"
                 });
-                
+
                 $(window).bind('scrollstop', this._scrollStop);
             },
  
-            _touchStart: function(event) {
-	            this.next.css('display', 'inline-block');
-            	//this.next.find('article').show(); // to make sure the parent .page doesn't influence the document size
-            	
-            	//this.prev.show();
-            	//this.prev.find('article').show();
-
-            	this.curPos = parseInt( this.element.css('x') );
-
-            	// set starting point of the potential swipe
-            	var data = event.originalEvent.touches[0];
-            	// use var instead of options!
-            	
-            	this.swipeStart = {
-					coords: [ data.pageX, data.pageY ]
-				};
+            _touchStart: function(event) {$('.debug').text('');
+            	if (!slideAnimating) {	
+	            	this.curPos = parseInt( this.element.css('x') );
+	
+	            	// set starting point of the potential swipe
+	            	var data = event.originalEvent.touches[0];
+	            	// use var instead of options!
+	            	
+	            	this.swipeStart = {
+						coords: [ data.pageX, data.pageY ]
+					};
+				}
             },
             
             _touchMove: function(event) {
@@ -104,6 +121,8 @@ define(['jqui','events','transit'], function() {
 	               
 	                if (!scr) {
 		                if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold) || this.options.sliding ) {
+			                next.find('article').css('display', 'inline-block'); // not needed with shadow element
+			            	prev.find('article').css('display', 'inline-block');
 			                event.preventDefault();
 		                	diffX = start.coords[0] - current.coords[0];
 		               	
@@ -127,6 +146,7 @@ define(['jqui','events','transit'], function() {
                 
             },
             
+            // todo: setup shadow element
             _touchEnd: function(event) {
             	// check if a swipe action occured
             	if (this.options.sliding && !slideAnimating) {
@@ -138,36 +158,38 @@ define(['jqui','events','transit'], function() {
 	            	var $el = this.element;
 	            	this.options.sliding = false;
 	            	slideAnimating = true;
-	            	//$('.debug').text(Math.abs(diff));
+	            	//$('.debug').text(current.attr('id'));
 	
 	            	// snap to point
 	            	if (Math.abs(diff) > this.options.swipeThreshold){
-		            	if (diff > 0 && this.next.length) {
+		            	if (diff > 0 && next.length) {
 		            		// swipe to next
 		            		newPos = this.curPos - windowWidth;
 		            		$el.transition({ x: newPos }, function() {
 		            			slideAnimating = false;
-				            	this.currrent.find('article').hide(); // since the pages are positioned absolute, the child element have to be hidden for the document height to be updated and therefore also the scrollbar
-				            	this.currrent.hide();
-				            	this.prev = this.current;
-				            	this.current = this.current.next();
-				                this.next = this.next.next();
+				            	current.find('article').css('display','none'); // since the pages are positioned absolute, the child element have to be hidden for the document height to be updated and therefore also the scrollbar
+				            	
+				            	//next.offset({ top: 60 });
+				            	//$(document).scrollTop(1);
+				            	
+				            	nav.find('li.selected').removeClass('selected').next().addClass('selected');
+				            	prev = current;
+				            	current = current.next();
+				                next = next.next();
 			            	});
 			            	
-		            	} else if (diff < 0 && this.prev.length) {
+		            	} else if (diff < 0 && prev.length) {
 			            	// swipe to previous
 			            	newPos = this.curPos + windowWidth;
 		            		$el.transition({ x: newPos }, function() {
 			            		slideAnimating = false;
+			            		current.find('article').css('display','none');
+			            		nav.find('li.selected').removeClass('selected').prev().addClass('selected');
+			            		next = current;
+				            	current = current.prev();
+				                prev = prev.prev();
 		            		});
-			            	/*
-				            	this.prev.transition({ x: '0px' }, function() {
-				            	$el.find('article').hide();	
-			            	});
-			            	*/
-			            	this.next = this.current;
-			            	this.current = this.current.prev();
-			                this.prev = this.prev.prev();
+			                
 		            	} else {
 			            	// no page available -> bounce back
 			            	this.bounceBack();
@@ -181,26 +203,20 @@ define(['jqui','events','transit'], function() {
             },
             
             _scrollStart: function(event) {
-            	//scr = true; // Get's called even befor the user actually scrolls
+            	//scr = true; // Get's called even before the user actually scrolls
             },
             
             _scrollStop: function(event) {
             	scr = false;
+            	
+            	// todo: only when scrollTop is more than 60
+            	$('.shadow-next').offset({ top: $(document).scrollTop() });
             },
             
-            // todo: busy when animating
             bounceBack: function() {
-	            //this.element.transition({ x: "0" });
-
 	            this.element.transition({ x: this.curPos }, function(){
 		            slideAnimating = false;
 	            });
-	            
-            	/*
-            	this.prev.transition({ x: -1*windowWidth });
-            	this.next.css('display', 'none');
-            	this.prev.css('display', 'none');
-            	*/
             }
              
         });
@@ -223,24 +239,50 @@ define(['jqui','events','transit'], function() {
 		
 		
 		$('.special-page').css({
-			perspective: '6000px',
 			rotateY: '-90deg'
 		});
 		
 		// animate current page
 		// todo: ease back (Vera's slides)
 		$('.front').transition({
-			perspective: '6000px',
 			rotateY: '90deg'
 		}, 400, 'linear', function() {
+			
+			this.css('display', 'none');
 			// animate about-page
 			$('.special-page').transition({
-				perspective: '6000px',
 				rotateY: '0deg'
-			}, 400, 'linear');	
+			}, 400, 'linear');
+			
 		});
 		
+	});
+	
+	// Return to projects
+	$('.btn-back').click(function(event) {
+		event.preventDefault();
 		
+		// show about-page
+		$('.front').css('display', 'block');
+		
+		
+		$('.front').css({
+			rotateY: '-90deg'
+		});
+		
+		// animate current page
+		// todo: ease back (Vera's slides)
+		$('.special-page').transition({
+			rotateY: '90deg'
+		}, 400, 'linear', function() {
+			
+			this.css('display', 'none');
+			// animate about-page
+			$('.front').transition({
+				rotateY: '0deg'
+			}, 400, 'linear');
+			
+		});
 		
 	});
 	
