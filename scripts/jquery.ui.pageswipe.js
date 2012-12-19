@@ -44,7 +44,7 @@ define(['jqui','events','transit'], function() {
                 current = $el.children().first();
                 next = $el.children().first().next();
                 prev = $el.children().first().prev();
-                windowWidth = $(window).width() - 40;
+                windowWidth = $(window).width();
                 nav = $(this.options.navSelector);
                 
                 // setup all pages
