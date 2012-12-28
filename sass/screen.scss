@@ -15,22 +15,24 @@ a {
 }
 
 .wrapper {
-	white-space: nowrap;
-	overflow: hidden;
+	overflow-x: hidden;
+	position: absolute;
 }
 
 .page,
 .special-page article {
 	padding: 40px;
 	background-color: teal;
-	display: inline-block;
-	white-space: normal;
-	vertical-align: top;
 	font-size: 12px;
 	line-height: 18px;
 	position: relative;
 	-webkit-transform: translateZ(0);
 	/* @include debug-vertical-alignment; */
+}
+
+.page#project2 {
+	position: fixed;
+	top: 0;
 }
 
 .special-page {
