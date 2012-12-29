@@ -15,17 +15,14 @@ a {
 }
 
 .wrapper {
-	white-space: nowrap;
-	overflow: hidden;
+	position: absolute;
+	overflow-x: hidden;
 }
 
 .page,
 .special-page article {
 	padding: 40px;
 	background-color: teal;
-	display: inline-block;
-	white-space: normal;
-	vertical-align: top;
 	font-size: 12px;
 	line-height: 18px;
 	position: relative;
@@ -45,6 +42,8 @@ a {
 
 #project2 {
 	background-color: purple;
+	position: fixed;
+	top: 0;
 }
 
 /*
