@@ -11,6 +11,7 @@ define(['jqui','events','transit'], function() {
 	$(function() {
 	
 		var windowWidth,
+			windowHeight,
 			padding,
 			headerHeight,
 			scr = false,
@@ -47,6 +48,7 @@ define(['jqui','events','transit'], function() {
 				next = $el.children().first().next();
 				prev = $el.children().first().prev();
 				windowWidth = $(window).width();
+				windowHeight = $(window).height();
 				nav = $(this.options.navSelector);
 				headerHeight = $('.header').height() + $('nav').height() + 2;
 				
@@ -55,7 +57,7 @@ define(['jqui','events','transit'], function() {
 					var $page = $(this);
 					padding = parseInt( $page.css('padding-left') );
 					$page.width( windowWidth-(2*padding) );
-					$page.hide(); // Hide all pages except the first. Not with css so with javascript disabled the pages are still available
+					$page.height(windowHeight);
 					if ($page.is(':empty')) {
 						$page.data('content', false);
 					}
@@ -75,7 +77,7 @@ define(['jqui','events','transit'], function() {
 				$el.children().first().data('first');
 				$el.children().last().data('last');
 				
-				$el.children().first().show();
+				$el.children().first().height('100%');
 				nav.find('li:first').addClass('selected');
 				
 				// bind all listeners
@@ -115,8 +117,8 @@ define(['jqui','events','transit'], function() {
 				
 					if (!scr) {
 						if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold) || this.options.sliding ) {
-							next.show();
-							prev.show();
+							next.height('100%');
+							prev.height('100%');
 							event.preventDefault();
 							diffX = start.coords[0] - currentTouch.coords[0];
 							
@@ -163,11 +165,9 @@ define(['jqui','events','transit'], function() {
 								if (scrolledPassHeader) {
 									$(document).scrollTop(headerHeight); // scroll to the point just below the header
 								}
-								next.css({'position': 'relative', 'top': 'auto'});
-								current.hide();
-								current.css({'position': 'fixed', 'top': '0'});
-								current.css('z-index', '0');
-								next.css('z-index', '10');
+								next.css({'position': 'relative', 'top': 'auto', 'z-index': '10'});
+								current.height(windowHeight);
+								current.css({'position': 'fixed', 'top': '0', 'z-index': '0'});
 								
 								nav.find('li.selected').removeClass('selected').next().addClass('selected');
 								prev = current;
@@ -183,11 +183,9 @@ define(['jqui','events','transit'], function() {
 								if (scrolledPassHeader) {
 									$(document).scrollTop(headerHeight); // scroll to the point just below the header
 								}
-								prev.css({'position': 'relative', 'top': 'auto'});
-								current.hide();
-								current.css({'position': 'fixed', 'top': '0'});
-								current.css('z-index', '0');
-								prev.css('z-index', '10');
+								prev.css({'position': 'relative', 'top': 'auto', 'z-index': '10'}); // todo: changing position is causing a flash of background color
+								current.height(windowHeight);
+								current.css({'position': 'fixed', 'top': '0', 'z-index': '0'});
 								
 								nav.find('li.selected').removeClass('selected').prev().addClass('selected');
 								next = current;

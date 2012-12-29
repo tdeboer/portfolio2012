@@ -17,6 +17,7 @@ a {
 .wrapper {
 	position: absolute;
 	overflow-x: hidden;
+	z-index: 15;
 }
 
 .page,
@@ -27,6 +28,7 @@ a {
 	line-height: 18px;
 	position: relative;
 	-webkit-transform: translateZ(0);
+	overflow: hidden;
 	/* @include debug-vertical-alignment; */
 }
 
@@ -52,6 +54,8 @@ a {
  
 .header {
 	zoom: 1;
+	position: relative;
+	z-index: 20;
 	line-height: 1em;
 	color: #fff;
 	@include background-image(linear-gradient(#3C3C3C, #111));
@@ -86,6 +90,8 @@ a {
 }
 
 nav {
+	position: relative;
+	z-index: 20;
 	background-color: #e6e6e6;
 	text-align: center;
 	li {
