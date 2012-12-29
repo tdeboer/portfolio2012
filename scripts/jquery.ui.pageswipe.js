@@ -95,7 +95,6 @@ define(['jqui','events','transit'], function() {
 					
 					// set starting point of the potential swipe
 					var data = event.originalEvent.touches[0];
-					// use var instead of options!
 					
 					this.swipeStart = {
 						coords: [ data.pageX, data.pageY ]
@@ -162,27 +161,40 @@ define(['jqui','events','transit'], function() {
 							current.transition({ x: -1*windowWidth }, function() {
 								slideAnimating = false;
 								if (scrolledPassHeader) {
-									$(document).scrollTop(headerHeight);	
+									$(document).scrollTop(headerHeight); // scroll to the point just below the header
 								}
 								next.css({'position': 'relative', 'top': 'auto'});
 								current.hide();
 								current.css({'position': 'fixed', 'top': '0'});
+								current.css('z-index', '0');
+								next.css('z-index', '10');
 								
 								nav.find('li.selected').removeClass('selected').next().addClass('selected');
 								prev = current;
 								current = current.next();
 								next = next.next();
+								next.css({ x: '0' });
+								prev.css({ x: '0' });
 							});
 							
 						} else if (diff < 0 && prev.length) { // swipe to previous
-							newPos = this.curPos + windowWidth;
-							$el.transition({ x: newPos }, function() {
+							current.transition({ x: windowWidth }, function() {
 								slideAnimating = false;
-								current.find('article').css('display','none');
+								if (scrolledPassHeader) {
+									$(document).scrollTop(headerHeight); // scroll to the point just below the header
+								}
+								prev.css({'position': 'relative', 'top': 'auto'});
+								current.hide();
+								current.css({'position': 'fixed', 'top': '0'});
+								current.css('z-index', '0');
+								prev.css('z-index', '10');
+								
 								nav.find('li.selected').removeClass('selected').prev().addClass('selected');
 								next = current;
 								current = current.prev();
 								prev = prev.prev();
+								next.css({ x: '0' });
+								prev.css({ x: '0' });
 							});
 							
 						} else {
@@ -204,8 +216,13 @@ define(['jqui','events','transit'], function() {
 			_scrollStop: function(event) {
 				scr = false;
 				
-				// todo: only when scrollTop is more than 60
-				$('.shadow-next').offset({ top: $(document).scrollTop() });
+				// todo: also prev page
+				if ($(document).scrollTop() <= headerHeight) {
+					var pageOffset = headerHeight - $(document).scrollTop();
+					next.css( 'top', pageOffset );
+				} else {
+					next.css( 'top', 0 );
+				}
 			},
 			
 			bounceBack: function() {
