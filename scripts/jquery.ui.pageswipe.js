@@ -6,6 +6,7 @@ define(['jqui','events','transit'], function() {
 	- make independent plugin and add listener to the swipe
 	- use var instead of options
 	- modernizr checks
+	- navigate directly to project by hash in url
 	*/
 	
 	$(function() {
@@ -44,20 +45,20 @@ define(['jqui','events','transit'], function() {
 			// the constructor
 			_create: function() {
 				var $el = this.element;
-				current = $el.children().first();
-				next = $el.children().first().next();
-				prev = $el.children().first().prev();
+				current = $el.children('.page').first();
+				next = $el.children('.page').first().next('.page');
+				prev = $el.children('.page').first().prev('.page');
 				windowWidth = $(window).width();
 				windowHeight = $(window).height();
 				nav = $(this.options.navSelector);
 				headerHeight = $('.header').height() + $('nav').height() + 2;
 				
 				// setup all pages
-				$el.children().each(function() {
+				$el.children('.page').each(function() {
 					var $page = $(this);
 					padding = parseInt( $page.css('padding-left') );
 					$page.width( windowWidth-(2*padding) );
-					$page.height(windowHeight);
+					
 					if ($page.is(':empty')) {
 						$page.data('content', false);
 					}
@@ -73,11 +74,16 @@ define(['jqui','events','transit'], function() {
 					*/
 				});
 				
-				// Good to know what page is first and last when handling the swipe
-				$el.children().first().data('first');
-				$el.children().last().data('last');
+				// some more setup for all pages except the first
+				$el.children('.page:gt(0)').each(function() {
+					$(this).css('top', headerHeight);
+				});
 				
-				$el.children().first().height('100%');
+				// some helpers to know what page is first, last and current
+				$el.children('.page').first().addClass('current').data('first');
+				$el.children('.page').last().data('last');
+				
+				$el.children('.page').first().show();
 				nav.find('li:first').addClass('selected');
 				
 				// bind all listeners
@@ -111,14 +117,21 @@ define(['jqui','events','transit'], function() {
 				var currentTouch = { coords: [ data.pageX, data.pageY ] };
 				var diffX = start.coords[0] - currentTouch.coords[0];
 				var diffY = start.coords[1] - currentTouch.coords[1];
-				//$('.debug').text(slideAnimating);
+				//$('.debug').text('');
 				
-				if (!slideAnimating) {
+				// calculate which direction the swipe could be going and show hide pages accordingly
+				if (diffX > 0) {
+					next.show();
+					prev.hide();
+				} else {
+					prev.show();
+					next.hide();
+				}
+				
+				if (!slideAnimating) { // check if a page is animating
 				
 					if (!scr) {
 						if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold) || this.options.sliding ) {
-							next.height('100%');
-							prev.height('100%');
 							event.preventDefault();
 							diffX = start.coords[0] - currentTouch.coords[0];
 							
@@ -133,7 +146,7 @@ define(['jqui','events','transit'], function() {
 					
 				} else {
 					
-					// prevent scroll because an animation is running
+					// prevent scroll because a page is animating
 					event.preventDefault();
 					
 				}
@@ -142,9 +155,9 @@ define(['jqui','events','transit'], function() {
 				
 			},
 			
-			// todo: setup shadow element
+			// todo: 
 			_touchEnd: function(event) {
-				// check if a swipe action occured
+				// check if a swipe occurred
 				if (this.options.sliding && !slideAnimating) {
 					
 					scr = false;
@@ -162,45 +175,53 @@ define(['jqui','events','transit'], function() {
 						if (diff > 0 && next.length) { // swipe to next
 							current.transition({ x: -1*windowWidth }, function() {
 								slideAnimating = false;
+								var pageOffset = headerHeight - $(document).scrollTop();
 								if (scrolledPassHeader) {
 									$(document).scrollTop(headerHeight); // scroll to the point just below the header
+									pageOffset = 0;
 								}
 								next.css({'position': 'relative', 'top': 'auto', 'z-index': '10'});
-								current.height(windowHeight);
-								current.css({'position': 'fixed', 'top': '0', 'z-index': '0'});
+								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'});
+								current.hide();
 								
 								nav.find('li.selected').removeClass('selected').next().addClass('selected');
 								prev = current;
-								current = current.next();
-								next = next.next();
+								current = current.next('.page');
+								next = next.next('.page');
 								next.css({ x: '0' });
 								prev.css({ x: '0' });
+								prev.removeClass('current');
+								current.addClass('current');
 							});
 							
 						} else if (diff < 0 && prev.length) { // swipe to previous
 							current.transition({ x: windowWidth }, function() {
 								slideAnimating = false;
+								var pageOffset = headerHeight - $(document).scrollTop();
 								if (scrolledPassHeader) {
 									$(document).scrollTop(headerHeight); // scroll to the point just below the header
+									pageOffset = 0;
 								}
 								prev.css({'position': 'relative', 'top': 'auto', 'z-index': '10'}); // todo: changing position is causing a flash of background color
-								current.height(windowHeight);
-								current.css({'position': 'fixed', 'top': '0', 'z-index': '0'});
+								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'});
+								current.hide();
 								
 								nav.find('li.selected').removeClass('selected').prev().addClass('selected');
 								next = current;
-								current = current.prev();
-								prev = prev.prev();
+								current = current.prev('.page');
+								prev = prev.prev('.page');
 								next.css({ x: '0' });
 								prev.css({ x: '0' });
+								next.removeClass('current');
+								current.addClass('current');
 							});
 							
 						} else {
-							// no page available -> bounce back
+							// no page available
 							this.bounceBack();
 						}
 					} else {
-						// not enough swipe -> bounce back
+						// not enough swipe
 						this.bounceBack();
 					}
 					
@@ -214,17 +235,19 @@ define(['jqui','events','transit'], function() {
 			_scrollStop: function(event) {
 				scr = false;
 				
-				// todo: also prev page
-				if ($(document).scrollTop() <= headerHeight) {
-					var pageOffset = headerHeight - $(document).scrollTop();
-					next.css( 'top', pageOffset );
-				} else {
-					next.css( 'top', 0 );
+				if ( $(document).scrollTop() > headerHeight ) {
+					$('.page:not(.current)').each(function() {
+						$(this).css('top', 0);
+					});
+				} else if ( $(document).scrollTop() < headerHeight ) {
+					$('.page:not(.current)').each(function() {
+						$(this).css('top', headerHeight-$(document).scrollTop());
+					});
 				}
 			},
 			
 			bounceBack: function() {
-				this.element.transition({ x: this.curPos }, function(){
+				current.transition({ x: 0 }, function(){
 					slideAnimating = false;
 				});
 			}
@@ -233,7 +256,7 @@ define(['jqui','events','transit'], function() {
 		
 		
 		
-		$( ".view" ).swipeable();
+		$("body").swipeable();
 		
 	});
 	

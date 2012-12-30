@@ -1253,59 +1253,58 @@ html {
 /* line 2, ../sass/screen.scss */
 body {
   font-family: Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
 }
 
-/* line 6, ../sass/screen.scss */
+/* line 7, ../sass/screen.scss */
 a {
   color: #000;
 }
-/* line 8, ../sass/screen.scss */
+/* line 9, ../sass/screen.scss */
 a:hover, a:focus {
   color: #000;
 }
 
-/* line 13, ../sass/screen.scss */
-.front {
-  -webkit-transform: translateZ(0);
-}
-
-/* line 17, ../sass/screen.scss */
-.wrapper {
-  position: absolute;
-  overflow-x: hidden;
-  z-index: 15;
-}
-
-/* line 24, ../sass/screen.scss */
+/* line 15, ../sass/screen.scss */
 .page,
 .special-page article {
   padding: 40px;
-  background-color: teal;
   font-size: 12px;
   line-height: 18px;
-  position: relative;
+  position: fixed;
+  display: none;
+  top: 0;
+  z-index: 0;
   -webkit-transform: translateZ(0);
+  /* bug: causes problems for position fixed*/
   overflow: hidden;
   /* @include debug-vertical-alignment; */
 }
 
-/* line 35, ../sass/screen.scss */
+/* line 28, ../sass/screen.scss */
 .special-page {
   position: absolute;
   top: 0em;
   display: none;
 }
 
-/* line 41, ../sass/screen.scss */
+/* line 34, ../sass/screen.scss */
 #project1 {
+  top: auto;
+  position: relative;
+  display: block;
+  background-color: teal;
   z-index: 10;
 }
 
-/* line 45, ../sass/screen.scss */
+/* line 42, ../sass/screen.scss */
 #project2 {
   background-color: purple;
-  position: fixed;
-  top: 0;
+}
+
+/* line 46, ../sass/screen.scss */
+#project3 {
+  background-color: #e2d010;
 }
 
 /*

@@ -1,6 +1,7 @@
 @import "base";
 body {
 	font-family: Helvetica, Arial, sans-serif;
+	overflow-x: hidden;
 }
 
 a {
@@ -10,24 +11,16 @@ a {
 	}
 }
 
-.front {
-	-webkit-transform: translateZ(0);
-}
-
-.wrapper {
-	position: absolute;
-	overflow-x: hidden;
-	z-index: 15;
-}
-
 .page,
 .special-page article {
 	padding: 40px;
-	background-color: teal;
 	font-size: 12px;
 	line-height: 18px;
-	position: relative;
-	-webkit-transform: translateZ(0);
+	position: fixed;
+	display: none;
+	top: 0;
+	z-index: 0;
+	-webkit-transform: translateZ(0);/* bug: causes problems for position fixed*/
 	overflow: hidden;
 	/* @include debug-vertical-alignment; */
 }
@@ -39,14 +32,21 @@ a {
 }
 
 #project1 {
+	top: auto;
+	position: relative;
+	display: block;
+	background-color: teal;
 	z-index: 10;
 }
 
 #project2 {
 	background-color: purple;
-	position: fixed;
-	top: 0;
 }
+
+#project3 {
+	background-color: #e2d010;
+}
+
 
 /*
  Header bar
