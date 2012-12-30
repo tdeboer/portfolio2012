@@ -2,11 +2,7 @@ define(['jqui','events','transit'], function() {
 
 	/*
 	todo:
-	- call widget lik this: $('wrapper').swipeable({ options });
-	- make independent plugin and add listener to the swipe
-	- use var instead of options
-	- modernizr checks
-	- navigate directly to project by hash in url
+	
 	*/
 	
 	$(function() {
@@ -21,6 +17,7 @@ define(['jqui','events','transit'], function() {
 			next, // next page
 			prev, // previous page
 			nav;
+			
 	
 		$.widget( "custom.swipeable", {
 			swipeStart: {},
@@ -41,6 +38,7 @@ define(['jqui','events','transit'], function() {
 				scrolling: false,
 				timer: null
 			},
+			
 
 			// the constructor
 			_create: function() {
@@ -64,14 +62,12 @@ define(['jqui','events','transit'], function() {
 					}
 					
 					// add navigation
-					/*
-					navEl = $('<li><a></a></li>');
+					var navEl = $('<li><a></a></li>');
 					navEl.find('a').attr({
 						href: '#'+$page.attr('id'),
 						alt: $page.attr('id')
 					});
 					nav.append(navEl);
-					*/
 				});
 				
 				// some more setup for all pages except the first
@@ -80,8 +76,12 @@ define(['jqui','events','transit'], function() {
 				});
 				
 				// some helpers to know what page is first, last and current
-				$el.children('.page').first().addClass('current').data('first');
+				current.addClass('current').data('first');
 				$el.children('.page').last().data('last');
+				
+				// load content for second page
+				var nextFile = next.attr('data-url');
+				next.load(nextFile);
 				
 				$el.children('.page').first().show();
 				nav.find('li:first').addClass('selected');
@@ -96,6 +96,7 @@ define(['jqui','events','transit'], function() {
 
 				$(window).bind('scrollstop', this._scrollStop);
 			},
+			
  
 			_touchStart: function(event) {
 				if (!slideAnimating) {
@@ -104,17 +105,16 @@ define(['jqui','events','transit'], function() {
 					// set starting point of the potential swipe
 					var data = event.originalEvent.touches[0];
 					
-					this.swipeStart = {
-						coords: [ data.pageX, data.pageY ]
-					};
+					this.swipeStart = { coords: [data.pageX, data.pageY] };
 				}
 			},
+			
 			
 			_touchMove: function(event) {
 				var $el = this.element;
 				var data = event.originalEvent.touches[0];
 				var start = this.swipeStart;
-				var currentTouch = { coords: [ data.pageX, data.pageY ] };
+				var currentTouch = { coords: [data.pageX, data.pageY] };
 				var diffX = start.coords[0] - currentTouch.coords[0];
 				var diffY = start.coords[1] - currentTouch.coords[1];
 				//$('.debug').text('');
@@ -155,11 +155,13 @@ define(['jqui','events','transit'], function() {
 				
 			},
 			
+			
 			// todo: 
 			_touchEnd: function(event) {
 				// check if a swipe occurred
 				if (this.options.sliding && !slideAnimating) {
 					
+					var that = this;
 					scr = false;
 					var start = this.swipeStart;
 					var end = this.swipeStop;
@@ -181,8 +183,7 @@ define(['jqui','events','transit'], function() {
 									pageOffset = 0;
 								}
 								next.css({'position': 'relative', 'top': 'auto', 'z-index': '10'});
-								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'});
-								current.hide();
+								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'}).hide();
 								
 								nav.find('li.selected').removeClass('selected').next().addClass('selected');
 								prev = current;
@@ -192,6 +193,7 @@ define(['jqui','events','transit'], function() {
 								prev.css({ x: '0' });
 								prev.removeClass('current');
 								current.addClass('current');
+								that.loadNeighbours();
 							});
 							
 						} else if (diff < 0 && prev.length) { // swipe to previous
@@ -203,8 +205,7 @@ define(['jqui','events','transit'], function() {
 									pageOffset = 0;
 								}
 								prev.css({'position': 'relative', 'top': 'auto', 'z-index': '10'}); // todo: changing position is causing a flash of background color
-								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'});
-								current.hide();
+								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'}).hide();
 								
 								nav.find('li.selected').removeClass('selected').prev().addClass('selected');
 								next = current;
@@ -214,6 +215,7 @@ define(['jqui','events','transit'], function() {
 								prev.css({ x: '0' });
 								next.removeClass('current');
 								current.addClass('current');
+								that.loadNeighbours();
 							});
 							
 						} else {
@@ -228,9 +230,31 @@ define(['jqui','events','transit'], function() {
 				}
 			},
 			
+			
+			bounceBack: function() {
+				current.transition({ x: 0 }, function(){
+					slideAnimating = false;
+				});
+			},
+			
+			
+			loadNeighbours: function() {
+				if ( !next.data('content') && typeof next.attr('data-url') !== 'undefined' ) {
+					var nextFile = next.attr('data-url');
+					next.load(nextFile);
+				}
+				
+				if ( !prev.data('content') && typeof prev.attr('data-url') !== 'undefined' ) {
+					var prevFile = prev.attr('data-url');
+					prev.load(prevFile);
+				}
+			},
+			
+			
 			_scrollStart: function(event) {
 				//scr = true; // Get's called even before the user actually scrolls
 			},
+			
 			
 			_scrollStop: function(event) {
 				scr = false;
@@ -244,13 +268,8 @@ define(['jqui','events','transit'], function() {
 						$(this).css('top', headerHeight-$(document).scrollTop());
 					});
 				}
-			},
-			
-			bounceBack: function() {
-				current.transition({ x: 0 }, function(){
-					slideAnimating = false;
-				});
 			}
+			
 			
 		});
 		

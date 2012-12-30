@@ -1,7 +1,8 @@
 @import "base";
 body {
 	font-family: Helvetica, Arial, sans-serif;
-	overflow-x: hidden;
+	background-color: #111;
+	overflow-x: hidden; /* does it work on mobile?? needed? */
 }
 
 a {
@@ -20,7 +21,7 @@ a {
 	display: none;
 	top: 0;
 	z-index: 0;
-	-webkit-transform: translateZ(0);/* bug: causes problems for position fixed*/
+	-webkit-transform: translateZ(0); /* bug: causes problems for position fixed */
 	overflow: hidden;
 	/* @include debug-vertical-alignment; */
 }
@@ -94,10 +95,11 @@ nav {
 	z-index: 20;
 	background-color: #e6e6e6;
 	text-align: center;
+	height: 1.5em;
 	li {
-		height: 1em;
 		list-style: none;
 		display: inline-block;
+		margin-right: 4px;
 		a {
 			display: inline-block;
 			width: 8px;
