@@ -13,7 +13,7 @@ a {
 }
 
 .page,
-.special-page article {
+.special-page {
 	padding: 40px;
 	font-size: 12px;
 	line-height: 18px;
@@ -31,7 +31,6 @@ a {
 .special-page {
 	position: absolute;
 	top: 0em;
-	display: none;
 }
 
 #project1 {

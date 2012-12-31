@@ -246,7 +246,7 @@ define(['jqui','events','transit'], function() {
 						$(this).data('content', true);
 					});
 				}
-				alert(prev.data('content'));
+				
 				if ( !prev.data('content') && typeof prev.attr('data-url') !== 'undefined' ) {
 					var prevFile = prev.attr('data-url');
 					prev.load(prevFile, function() {
@@ -291,9 +291,7 @@ define(['jqui','events','transit'], function() {
 	$('.btn-about').click(function(event) {
 		event.preventDefault();
 		
-		// show about-page
-		$('.special-page').css('display', 'inline-block');
-		
+		$('.special-page').show();
 		
 		$('.special-page').css({
 			rotateY: '-90deg'
@@ -301,7 +299,7 @@ define(['jqui','events','transit'], function() {
 		
 		// animate current page
 		// todo: ease back (Vera's slides)
-		$('.front').transition({
+		$('.header, nav, .page').transition({
 			rotateY: '90deg'
 		}, 400, 'linear', function() {
 			
