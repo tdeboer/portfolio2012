@@ -23,6 +23,7 @@ a {
 	z-index: 0;
 	-webkit-transform: translateZ(0); /* bug: causes problems for position fixed */
 	overflow: hidden;
+	background-color: #b28cbf;
 	/* @include debug-vertical-alignment; */
 }
 
