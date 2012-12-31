@@ -24,6 +24,7 @@ a {
 	-webkit-transform: translateZ(0); /* bug: causes problems for position fixed */
 	overflow: hidden;
 	background-color: #b28cbf;
+	@include single-box-shadow;
 	/* @include debug-vertical-alignment; */
 }
 

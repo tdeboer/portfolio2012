@@ -14,3 +14,4 @@ Todo:
 - modernizr checks
 - navigate directly to project by hash in url
 - load pages in the placeholders
+- deal with short pages

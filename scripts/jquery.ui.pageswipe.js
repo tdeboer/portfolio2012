@@ -11,6 +11,7 @@ define(['jqui','events','transit'], function() {
 			windowHeight,
 			padding,
 			headerHeight,
+			that,
 			scr = false,
 			slideAnimating = false,
 			current, // current page
@@ -43,6 +44,7 @@ define(['jqui','events','transit'], function() {
 			// the constructor
 			_create: function() {
 				var $el = this.element;
+				that = this;
 				current = $el.children('.page').first();
 				next = $el.children('.page').first().next('.page');
 				prev = $el.children('.page').first().prev('.page');
@@ -75,16 +77,15 @@ define(['jqui','events','transit'], function() {
 					$(this).css('top', headerHeight);
 				});
 				
-				// some helpers to know what page is first, last and current
-				current.addClass('current').data('first');
-				$el.children('.page').last().data('last');
+				// setup first page
+				current.addClass('current').data('content', true);
+				nav.find('li:first').addClass('selected');
 				
 				// load content for second page
 				var nextFile = next.attr('data-url');
-				next.load(nextFile);
-				
-				$el.children('.page').first().show();
-				nav.find('li:first').addClass('selected');
+				next.load(nextFile, function() {
+					$(this).data('content', true);
+				});
 				
 				// bind all listeners
 				this._on({
@@ -161,15 +162,15 @@ define(['jqui','events','transit'], function() {
 				// check if a swipe occurred
 				if (this.options.sliding && !slideAnimating) {
 					
-					var that = this;
-					scr = false;
-					var start = this.swipeStart;
-					var end = this.swipeStop;
-					var diff = start.coords[0] - end.coords[0];
-					var $el = this.element;
+					var start = this.swipeStart,
+						end = this.swipeStop,
+						diff = start.coords[0] - end.coords[0],
+						$el = this.element,
+						scrolledPassHeader = $(document).scrollTop() > headerHeight;
+					
 					this.options.sliding = false;
+					scr = false;
 					slideAnimating = true;
-					var scrolledPassHeader = $(document).scrollTop() > headerHeight;
 					//$('.debug').text(current.attr('id'));
 					
 					// snap to point
@@ -241,12 +242,16 @@ define(['jqui','events','transit'], function() {
 			loadNeighbours: function() {
 				if ( !next.data('content') && typeof next.attr('data-url') !== 'undefined' ) {
 					var nextFile = next.attr('data-url');
-					next.load(nextFile);
+					next.load(nextFile, function() {
+						$(this).data('content', true);
+					});
 				}
-				
+				alert(prev.data('content'));
 				if ( !prev.data('content') && typeof prev.attr('data-url') !== 'undefined' ) {
 					var prevFile = prev.attr('data-url');
-					prev.load(prevFile);
+					prev.load(prevFile, function() {
+						$(this).data('content', true);
+					});
 				}
 			},
 			
