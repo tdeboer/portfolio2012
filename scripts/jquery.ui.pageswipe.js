@@ -57,7 +57,7 @@ define(['jqui','events','transit'], function() {
 				$el.children('.page').each(function() {
 					var $page = $(this);
 					padding = parseInt( $page.css('padding-left') );
-					$page.width( windowWidth-(2*padding) );
+					//$page.width( windowWidth-(2*padding) );
 					
 					if ($page.is(':empty')) {
 						$page.data('content', false);

@@ -1,8 +1,14 @@
+@charset "UTF-8";
 @import "base";
 body {
 	font-family: Helvetica, Arial, sans-serif;
-	background-color: #111;
+	font-size: 100%;
+	background-color: #676767;
 	overflow-x: hidden; /* does it work on mobile?? needed? */
+	@include respond-to(desktop) {
+		width: 78%;
+		margin: 0 auto;
+	}
 }
 
 a {
@@ -12,18 +18,28 @@ a {
 	}
 }
 
+p,
+figure {
+	margin-bottom: 12px;
+}
+
+img,
+object,
+embed,
+video {
+	max-width: 100%;
+}
+
 .page,
 .special-page {
-	padding: 40px;
-	font-size: 12px;
-	line-height: 18px;
+	padding: 6.25% 6.25% 12.5%; /* 20 % 320 */
 	position: fixed;
 	display: none;
 	top: 0;
 	z-index: 0;
-	-webkit-transform: translateZ(0); /* bug: causes problems for position fixed */
+	-webkit-transform: translateZ(0);
 	overflow: hidden;
-	background-color: #b28cbf;
+	background-color: #e6e6e6;
 	@include single-box-shadow;
 	/* @include debug-vertical-alignment; */
 }
@@ -33,32 +49,22 @@ a {
 	top: 0em;
 }
 
-#project1 {
+.page.first {
 	top: auto;
 	position: relative;
 	display: block;
-	background-color: teal;
 	z-index: 10;
 }
 
-#project2 {
-	background-color: purple;
-}
 
-#project3 {
-	background-color: #e2d010;
-}
-
-
-/*
- Header bar
- */
- 
 .header {
 	zoom: 1;
 	position: relative;
 	z-index: 20;
 	line-height: 1em;
+	@include respond-to(desktop) {
+		height: 4em;
+	}
 	color: #fff;
 	@include background-image(linear-gradient(#3C3C3C, #111));
 	border: {
@@ -91,10 +97,11 @@ a {
 
 }
 
+
 nav {
 	position: relative;
 	z-index: 20;
-	background-color: #e6e6e6;
+	background-color: #3C3C3C;
 	text-align: center;
 	height: 1.5em;
 	li {
@@ -109,7 +116,7 @@ nav {
 			background-color: #aaa;
 		}
 		&.selected a {
-			background-color: #333;
+			background-color: #ffffff;
 		}
 	}
 }
@@ -129,24 +136,52 @@ nav {
 	display: block;
 	position: relative;
 	min-width: 0.75em;
+	@include retina {
+		background: url('../gfx/logo@2x.png') no-repeat;
+		@include background-size(18px);	
+	}
 }
 
 
 /*
  content
 */
-article h1 {
-	@include adjust-font-size-to(42px);
+article {
+	
+	h1 {
+		font-size: 2em;
+		line-height: 1.2em;
+	}
+	
+	h2 {
+		font-size: 1.4em;
+		line-height: 1.2em;
+	}
+	
+	h3 {
+		font-size: 1.2em;
+		line-height: 1.1em;
+	}
+	
+	p, li, a, figcaption {
+		font-size: 1em;
+		line-height: 1.3em;
+		text-align: justify;
+		hyphens: auto;
+		-webkit-hyphens: auto;
+		-moz-hyphens: auto;
+		-ms-hyphens: auto;
+	}
+	
 }
 
-article h2 {
-	@include adjust-font-size-to(32px);
+hgroup {
+	margin-bottom: 1.4em;
 }
 
 
 .personal-links li {
 	@extend %button-list-item;
-	@include adjust-font-size-to(22px);
 	background-color: #000;
 	color: #fff;
 	a {
@@ -159,12 +194,13 @@ article h2 {
 }
 
 
-
-/*
- footer
-*/
-footer ul {
-	
+footer li {
+	display: inline;
+	margin-right: 4px;
+	padding: 4px;
+	line-height: 26px;
+	background-color: #000;
+	color: #fff;
 }
 
 
@@ -172,9 +208,3 @@ footer ul {
  media queries
  */
 
-@media screen and (-webkit-min-device-pixel-ratio: 2), screen and (max--moz-device-pixel-ratio: 2) {
-	.home-icon {
-		background: url('../gfx/logo@2x.png') no-repeat;
-		@include background-size(18px);
-	}
-}
