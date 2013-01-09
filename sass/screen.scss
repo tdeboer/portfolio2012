@@ -40,7 +40,6 @@ video {
 .special-page {
 	padding: 6.25% 6.25% 12.5%; /* 20 % 320 */
 	position: fixed;
-	display: none;
 	top: 0;
 	z-index: 0;
 	-webkit-transform: translateZ(0);
@@ -51,6 +50,7 @@ video {
 }
 
 .special-page {
+	display: none;
 	position: absolute;
 	top: 0em;
 }

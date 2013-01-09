@@ -135,11 +135,9 @@ define(['jqui','events','transit'], function() {
 							
 							if (!this.options.sliding) { // todo: what if user slides first left and then right in one movement?
 								if (diffX > this.options.scrollSupressionThreshold/2) {
-									next.show();
-									prev.hide();
+									next.css('z-index', 5);
 								} else if ( diffX < ((this.options.scrollSupressionThreshold/2)*-1) ){
-									prev.show();
-									next.hide();
+									prev.css('z-index', 5);
 								}
 							}
 							
@@ -190,7 +188,7 @@ define(['jqui','events','transit'], function() {
 									pageOffset = 0;
 								}
 								next.css({'position': 'relative', 'top': 'auto', 'z-index': '10'});
-								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'}).hide();
+								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'});
 								
 								nav.find('li.selected').removeClass('selected').next().addClass('selected');
 								prev = current;
@@ -213,7 +211,7 @@ define(['jqui','events','transit'], function() {
 									pageOffset = 0;
 								}
 								prev.css({'position': 'relative', 'top': 'auto', 'z-index': '10'}); // todo: changing position is causing a flash of background color
-								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'}).hide();
+								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'});
 								
 								nav.find('li.selected').removeClass('selected').prev().addClass('selected');
 								next = current;
