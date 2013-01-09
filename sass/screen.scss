@@ -36,6 +36,14 @@ video {
 	max-width: 100%;
 }
 
+.shutter {
+	background: #676767 repeat-x fixed url('../gfx/bg-noise-half.png');
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	top: 0;
+}
+
 .page,
 .special-page {
 	padding: 6.25% 6.25% 12.5%; /* 20 % 320 */

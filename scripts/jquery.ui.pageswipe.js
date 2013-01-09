@@ -17,7 +17,8 @@ define(['jqui','events','transit'], function() {
 			current, // current page
 			next, // next page
 			prev, // previous page
-			nav;
+			nav,
+			logging = true;
 			
 	
 		$.widget( "custom.swipeable", {
@@ -86,6 +87,8 @@ define(['jqui','events','transit'], function() {
 				current.addClass('current').data('content', true);
 				nav.find('li:first').addClass('selected');
 				
+				$el.find(this.options.selector).last().addClass('last');
+				
 				// bind all listeners
 				this._on({
 					touchstart: "_touchStart",
@@ -123,10 +126,10 @@ define(['jqui','events','transit'], function() {
 				//$('.debug').text('');
 				
 				if (!slideAnimating) { // check if a page is animating
-					console.log('slideanimating:false');
-					if (!scr) {console.log('not scrolling');
+					that._log('slideanimating:false');
+					if (!scr) {that._log('not scrolling');
 						if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold) || this.options.sliding ) {
-							console.log('swiping');
+							that._log('swiping');
 							event.preventDefault();
 							diffX = start.coords[0] - currentTouch.coords[0];
 							
@@ -135,21 +138,31 @@ define(['jqui','events','transit'], function() {
 							
 							if (!this.options.sliding) { // todo: what if user slides first left and then right in one movement?
 								if (diffX > this.options.scrollSupressionThreshold/2) {
-									next.css('z-index', 5);
+									if (current.hasClass('last')) {
+										$('.shutter').css('z-index', 5); // hide pages underneath with another dummy page
+									} else {
+										next.css('z-index', 5);
+										$('.shutter').css('z-index', 0);
+									}
 								} else if ( diffX < ((this.options.scrollSupressionThreshold/2)*-1) ){
-									prev.css('z-index', 5);
+									if (current.hasClass('first')) {
+										$('.shutter').css('z-index', 5);
+									} else {
+										prev.css('z-index', 5);
+										$('.shutter').css('z-index', 0);
+									}
 								}
 							}
 							
 							this.options.sliding = true;
 							this.swipeStop = currentTouch;
-						} else if (Math.abs(diffY) >= 5) {console.log('scrolling');
+						} else if (Math.abs(diffY) >= 5) {that._log('scrolling');
 							scr = true;
 						}
 					}
 					
 				} else {
-					console.log('slideanimating:true');
+					that._log('slideanimating:true');
 					// prevent scroll because a page is animating
 					event.preventDefault();
 					
@@ -163,7 +176,7 @@ define(['jqui','events','transit'], function() {
 			// todo: 
 			_touchEnd: function(event) {
 				// check if a swipe occurred
-				if (this.options.sliding && !slideAnimating) {console.log('swiped:true');
+				if (this.options.sliding && !slideAnimating) {that._log('swiped:true');
 					
 					var start = this.swipeStart,
 						end = this.swipeStop,
@@ -177,9 +190,9 @@ define(['jqui','events','transit'], function() {
 					//$('.debug').text(current.attr('id'));
 					
 					// snap to point
-					if (Math.abs(diff) > this.options.swipeThreshold){console.log('enough swipe');
+					if (Math.abs(diff) > this.options.swipeThreshold){that._log('enough swipe');
 						if (diff > 0 && next.length) { // swipe to next
-							console.log('swipe next');
+							that._log('swipe next');
 							current.transition({ x: -1*windowWidth }, function() {
 								slideAnimating = false;
 								var pageOffset = headerHeight - $(document).scrollTop();
@@ -202,7 +215,7 @@ define(['jqui','events','transit'], function() {
 							});
 							
 						} else if (diff < 0 && prev.length) { // swipe to previous
-							console.log('swipe prev');
+							that._log('swipe prev');
 							current.transition({ x: windowWidth }, function() {
 								slideAnimating = false;
 								var pageOffset = headerHeight - $(document).scrollTop();
@@ -224,11 +237,11 @@ define(['jqui','events','transit'], function() {
 								that.loadNeighbours();
 							});
 							
-						} else {console.log('no page available');
+						} else {that._log('no page available');
 							// no page available
 							this.bounceBack();
 						}
-					} else {console.log('not enough swipe');
+					} else {that._log('not enough swipe');
 						// not enough swipe
 						this.bounceBack();
 					}
@@ -273,6 +286,7 @@ define(['jqui','events','transit'], function() {
 				
 				if ( $(document).scrollTop() > headerHeight ) {
 					$('.page:not(.current)').each(function() {
+						$(this).css('z-index', 1);
 						$(this).css('top', 0);
 					});
 				} else if ( $(document).scrollTop() < headerHeight ) {
@@ -300,6 +314,13 @@ define(['jqui','events','transit'], function() {
 				}
 				if (prev.outerHeight() < minPageHeight) {
 					prev.css('min-height', minPageHeight);
+				}
+			},
+			
+			
+			_log: function(message) {
+				if (logging) {
+					console.log(message);
 				}
 			}
 			
