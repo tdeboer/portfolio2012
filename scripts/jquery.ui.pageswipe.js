@@ -48,16 +48,20 @@ define(['jqui','events','transit'], function() {
 				current = $el.children('.page').first();
 				next = $el.children('.page').first().next('.page');
 				prev = $el.children('.page').first().prev('.page');
-				windowWidth = $(window).width();
-				windowHeight = $(window).height();
 				nav = $(this.options.navSelector);
 				headerHeight = $('.header').height() + $('nav').height() + 2;
+				
+				// load content for second page
+				var nextFile = next.attr('data-url');
+				next.load(nextFile, function() {
+					$(this).data('content', true).show();
+					that.windowResized();
+				});
+				
 				
 				// setup all pages
 				$el.children('.page').each(function() {
 					var $page = $(this);
-					padding = parseInt( $page.css('padding-left') );
-					//$page.width( windowWidth-(2*padding) );
 					
 					if ($page.is(':empty')) {
 						$page.data('content', false);
@@ -70,6 +74,7 @@ define(['jqui','events','transit'], function() {
 						alt: $page.attr('id')
 					});
 					nav.append(navEl);
+					
 				});
 				
 				// some more setup for all pages except the first
@@ -81,12 +86,6 @@ define(['jqui','events','transit'], function() {
 				current.addClass('current').data('content', true);
 				nav.find('li:first').addClass('selected');
 				
-				// load content for second page
-				var nextFile = next.attr('data-url');
-				next.load(nextFile, function() {
-					$(this).data('content', true);
-				});
-				
 				// bind all listeners
 				this._on({
 					touchstart: "_touchStart",
@@ -95,7 +94,10 @@ define(['jqui','events','transit'], function() {
 					scrollstart: "_scrollStart"
 				});
 
-				$(window).bind('scrollstop', this._scrollStop);
+				$(window).bind({
+					scrollstop: this._scrollStop,
+					resize: this.windowResized
+				});
 			},
 			
  
@@ -120,33 +122,36 @@ define(['jqui','events','transit'], function() {
 				var diffY = start.coords[1] - currentTouch.coords[1];
 				//$('.debug').text('');
 				
-				// calculate which direction the swipe could be going and show hide pages accordingly
-				if (diffX > 0) {
-					next.show();
-					prev.hide();
-				} else {
-					prev.show();
-					next.hide();
-				}
-				
 				if (!slideAnimating) { // check if a page is animating
-				
-					if (!scr) {
+					console.log('slideanimating:false');
+					if (!scr) {console.log('not scrolling');
 						if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold) || this.options.sliding ) {
+							console.log('swiping');
 							event.preventDefault();
 							diffX = start.coords[0] - currentTouch.coords[0];
 							
-							this.options.sliding = true;
 							var newPos = this.curPos - diffX;
 							current.css({ x: newPos });
+							
+							if (!this.options.sliding) { // todo: what if user slides first left and then right in one movement?
+								if (diffX > this.options.scrollSupressionThreshold/2) {
+									next.show();
+									prev.hide();
+								} else if ( diffX < ((this.options.scrollSupressionThreshold/2)*-1) ){
+									prev.show();
+									next.hide();
+								}
+							}
+							
+							this.options.sliding = true;
 							this.swipeStop = currentTouch;
-						} else if (Math.abs(diffY) >= 5) {
+						} else if (Math.abs(diffY) >= 5) {console.log('scrolling');
 							scr = true;
 						}
 					}
 					
 				} else {
-					
+					console.log('slideanimating:true');
 					// prevent scroll because a page is animating
 					event.preventDefault();
 					
@@ -160,7 +165,7 @@ define(['jqui','events','transit'], function() {
 			// todo: 
 			_touchEnd: function(event) {
 				// check if a swipe occurred
-				if (this.options.sliding && !slideAnimating) {
+				if (this.options.sliding && !slideAnimating) {console.log('swiped:true');
 					
 					var start = this.swipeStart,
 						end = this.swipeStop,
@@ -174,8 +179,9 @@ define(['jqui','events','transit'], function() {
 					//$('.debug').text(current.attr('id'));
 					
 					// snap to point
-					if (Math.abs(diff) > this.options.swipeThreshold){
+					if (Math.abs(diff) > this.options.swipeThreshold){console.log('enough swipe');
 						if (diff > 0 && next.length) { // swipe to next
+							console.log('swipe next');
 							current.transition({ x: -1*windowWidth }, function() {
 								slideAnimating = false;
 								var pageOffset = headerHeight - $(document).scrollTop();
@@ -198,6 +204,7 @@ define(['jqui','events','transit'], function() {
 							});
 							
 						} else if (diff < 0 && prev.length) { // swipe to previous
+							console.log('swipe prev');
 							current.transition({ x: windowWidth }, function() {
 								slideAnimating = false;
 								var pageOffset = headerHeight - $(document).scrollTop();
@@ -219,11 +226,11 @@ define(['jqui','events','transit'], function() {
 								that.loadNeighbours();
 							});
 							
-						} else {
+						} else {console.log('no page available');
 							// no page available
 							this.bounceBack();
 						}
-					} else {
+					} else {console.log('not enough swipe');
 						// not enough swipe
 						this.bounceBack();
 					}
@@ -272,6 +279,27 @@ define(['jqui','events','transit'], function() {
 					$('.page:not(.current)').each(function() {
 						$(this).css('top', headerHeight-$(document).scrollTop());
 					});
+				}
+			},
+			
+			
+			windowResized: function() {
+				windowWidth = $(window).width();
+				windowHeight = $(window).height();
+				that.fullHeightMinimum();
+			},
+			
+			
+			fullHeightMinimum: function() {
+				var minPageHeight = windowHeight-headerHeight;
+				if (current.outerHeight() < minPageHeight) {
+					current.css('min-height', minPageHeight);
+				}
+				if (next.outerHeight() < minPageHeight) {
+					next.css('min-height', minPageHeight);
+				}
+				if (prev.outerHeight() < minPageHeight) {
+					prev.css('min-height', minPageHeight);
 				}
 			}
 			
