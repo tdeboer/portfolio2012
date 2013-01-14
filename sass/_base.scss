@@ -2,8 +2,11 @@
 @import "compass";
 @import "compass/reset";
 @import "font-awesome";
+@import url(http://fonts.googleapis.com/css?family=Bitter:400,700,400italic);
 @include establish-baseline;
 
+$contrasted-dark-default: #000;
+$contrasted-light-default: #fff;
 
 
 @mixin button($position, $color) {
@@ -15,8 +18,7 @@
 	@extend .btn-prep;
 	@include background-image(linear-gradient($color, $gradient-shade));
 	@include single-box-shadow(rgba(#fff, 0.1), 1px, 1px, 0px);
-	line-height: 1em;
-	font-size: 12.5px;
+	font-size: 0.9em;
 	border: 1px solid $shade;
 	@if $position == right {
 		right: 0.6em;
@@ -46,8 +48,12 @@
 		@media (min-width: 768px) {
 			@content;
 		}
-	} @else if $device == desktop {
+	} @else if $device == laptop {
 		@media (min-width: 1024px) {
+			@content;
+		}
+	} @else if $device == desktop {
+		@media (min-width: 1280px) {
 			@content;
 		}
 	}
@@ -83,3 +89,11 @@
 		vertical-align: middle;
 	}
 }
+
+/*
+@mixin project-highlight($project) {
+	@if $project == listn {
+		$projecthighlight: #fc0;
+	}
+}
+*/

@@ -1,11 +1,14 @@
 @charset "UTF-8";
 @import "base";
+
 body {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 100%;
+	color: #3b3b3b;
+	position: relative;
 	background: #676767 repeat-x fixed url('../gfx/bg-noise-half.png');
 	overflow-x: hidden; /* does it work on mobile?? needed? */
-	@include respond-to(desktop) {
+	@include respond-to(laptop) {
 		width: 78%;
 		margin: 0 auto;
 	}
@@ -27,6 +30,12 @@ figure {
 	background-color: rgba(255, 255, 255, 0.7);
 	padding: 12px;
 	@include border-radius(3px);
+	line-height: 0;
+	@include respond-to(laptop) {
+		&.cover {
+			display: none;
+		}
+	}
 }
 
 img,
@@ -40,8 +49,9 @@ video {
 	background: #676767 repeat-x fixed url('../gfx/bg-noise-half.png');
 	position: fixed;
 	height: 100%;
-	width: 100%;
 	top: 0;
+	right: 0;
+	left: 0;
 }
 
 .page,
@@ -49,10 +59,9 @@ video {
 	padding: 6.25% 6.25% 12.5%; /* 20 % 320 */
 	position: fixed;
 	top: 0;
-	z-index: 0;
+	z-index: 1;
 	-webkit-transform: translateZ(0);
-	overflow: hidden;
-	background-color: #eeeeee;
+	background-color: #eee;
 	@include single-box-shadow;
 	/* @include debug-vertical-alignment; */
 }
@@ -75,7 +84,7 @@ video {
 	position: relative;
 	z-index: 300;
 	line-height: 1em;
-	@include respond-to(desktop) {
+	@include respond-to(laptop) {
 		height: 3em;
 	}
 	color: #fff;
@@ -90,11 +99,18 @@ video {
 	}
 		a {
 			color: #fff;
+			@include respond-to(tablet-portrait) {
+				color: #eee;
+			}
 		}
 		h1 {
 			font-weight: bold;
 			margin: 0.6em 10em 0.6em 2.4em;
 			padding: 0;
+			@include respond-to(tablet-portrait) {
+				float: left;
+				margin-right: 2.4em;
+			}
 		}
 		.logo {
 			@extend .btn-prep;
@@ -103,9 +119,35 @@ video {
 			width: 18px;
 			height: 18px;
 		}
-		.btn-about, .btn-back {
+		.btn-back {
 			@include button(right, #555);
 			top: 0.3em;
+		}
+		.btn-about {
+			@include button(right, #555);
+			top: 0.3em;
+			@include respond-to(tablet-portrait) {
+				float: right;
+				position: relative !important;
+				display: inline;
+				font-weight: normal !important;
+				border: 0;
+				right: 0;
+				top: 0;
+				@include background-image(none);
+				@include single-box-shadow(none);
+				span {
+					border: 0;
+					text-shadow: none;
+					padding: 0.2em 0.3em;
+				}
+				&.selected, &:hover {
+					@include respond-to(tablet-portrait) {
+						color: #fff;
+						text-decoration: underline;
+					}
+				}
+			}
 		}
 
 }
@@ -117,19 +159,35 @@ nav {
 	background-color: #111;
 	text-align: center;
 	height: 1.5em;
-	li {
-		list-style: none;
+	font-size: 0.9em;
+	@include respond-to(tablet-portrait) {
+		float: right;
+		background-color: transparent;
+	}
+	a {
 		display: inline-block;
-		margin-right: 4px;
-		a {
-			display: inline-block;
-			width: 8px;
-			height: 8px;
-			@include border-radius(4px);
-			background-color: #aaa;
+		width: 8px;
+		height: 8px;
+		@include border-radius(4px);
+		background-color: #aaa;
+		overflow: hidden;
+		text-indent: 10px;
+		text-decoration: none;
+		@include respond-to(tablet-portrait) {
+			padding: 0.2em 0.3em;
+			width: auto;
+			height: auto;
+			background-color: transparent;
+			margin-right: 4px;
+			overflow: auto;
 		}
-		&.selected a {
+		&.selected, &:hover {
 			background-color: #eee;
+			@include respond-to(tablet-portrait) {
+				background-color: transparent;
+				color: #ffffff;
+				text-decoration: underline;
+			}
 		}
 	}
 }
@@ -159,39 +217,84 @@ nav {
 /*
  content
 */
-article {
+em {
+	font-style: italic;
+}
+
+header {
+	hgroup {
+		margin-bottom: 1.4em;
+	}
+	
+	figure {
+		display: none;
+		padding: 0;
+		max-height: 300px;
+		overflow: hidden;
+		@include respond-to(laptop) {
+			display: block;
+		}
+	}
 	
 	h1 {
+		font-family: 'Bitter', serif;
 		font-size: 2em;
 		line-height: 1.2em;
+		@include respond-to(tablet-portrait) {
+			font-size: 3.2em;
+		}
 	}
 	
 	h2 {
 		font-size: 1.4em;
 		line-height: 1.2em;
+		font-family: 'Bitter', serif;
 	}
 	
 	h3 {
-		font-size: 1.2em;
-		line-height: 1.1em;
+		font-size: 1em;
+		line-height: 1.4em;
+	}
+}
+
+article {
+	@include respond-to(laptop) {
+		display: inline-block;
+		max-width: 60%;
+		margin-right: 5%;
+		vertical-align: top;
 	}
 	
-	p, li, a, figcaption {
+	p, li, a {
 		font-size: 1em;
-		line-height: 1.3em;
+		line-height: 1.4em;
+		/*
 		text-align: justify;
 		hyphens: auto;
 		-webkit-hyphens: auto;
 		-moz-hyphens: auto;
 		-ms-hyphens: auto;
+		*/
+	}
+	
+	figcaption {
+		font-size: 0.9em;
+		line-height: 1.4em;
 	}
 	
 }
 
 .columned {
-	@include respond-to(desktop) {
+	vertical-align: top;
+	@include respond-to(tablet-portrait) {
 		width: 49%;
 		display: inline-block;
+	}
+	@include respond-to(desktop) {
+		width: 32%;
+		display: inline-block;
+	}
+	&:last-child {
 		margin-bottom: 24px;
 	}
 }
@@ -202,19 +305,33 @@ article {
 		vertical-align: text-top;
 	}
 	.leading-icon {
-		width: 30%;
+		width: 25%;
 		text-align: center;
 		margin-right: 2%;
 	}
 	p {
-		width: 66%;
+		width: 71%;
 	}
 }
 
-hgroup {
-	margin-bottom: 1.4em;
+.list {
+	margin-left: 2em;
+	list-style: disc;
 }
 
+.embedded-video {
+	position: relative;
+	padding-bottom: 56%;
+	padding-top: 25px;
+	height: 0;
+	iframe {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+	}
+}
 
 .actions li {
 	@extend %button-list-item;
@@ -229,6 +346,12 @@ hgroup {
 	}
 }
 
+footer {
+	@include respond-to(laptop) {
+		display: inline-block;
+		max-width: 34%;
+	}
+}
 
 footer li {
 	display: inline;
@@ -237,6 +360,7 @@ footer li {
 	line-height: 2em;
 	background-color: #000;
 	color: #fff;
+	white-space: nowrap;
 }
 
 
@@ -244,3 +368,4 @@ footer li {
  media queries
  */
 
+@import "projects";

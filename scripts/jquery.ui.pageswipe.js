@@ -17,6 +17,7 @@ define(['jqui','events','transit'], function() {
 			current, // current page
 			next, // next page
 			prev, // previous page
+			last, // previous visible page
 			nav,
 			logging = true;
 			
@@ -50,17 +51,10 @@ define(['jqui','events','transit'], function() {
 				next = $el.children('.page').first().next('.page');
 				prev = $el.children('.page').first().prev('.page');
 				nav = $(this.options.navSelector);
-				headerHeight = $('.header').height() + $('nav').height() + 2;
-				
-				// load content for second page
-				var nextFile = next.attr('data-url');
-				next.load(nextFile, function() {
-					$(this).data('content', true).show();
-					that.windowResized();
-				});
-				
-				
+				headerHeight = $('.header').outerHeight();
+									
 				// setup all pages
+				that.windowResized();
 				$el.children('.page').each(function() {
 					var $page = $(this);
 					
@@ -68,39 +62,65 @@ define(['jqui','events','transit'], function() {
 						$page.data('content', false);
 					}
 					
+					$page.css('min-height', windowHeight);
+					
 					// add navigation
-					var navEl = $('<li><a></a></li>');
-					navEl.find('a').attr({
+					// todo: do not build dynamically
+					var navEl = $('<a></a>');
+					navEl.attr({
 						href: '#'+$page.attr('id'),
-						alt: $page.attr('id')
-					});
+						alt: $page.attr('id'),
+						class: $page.attr('id')
+					}).text($page.attr('data-title'));
 					nav.append(navEl);
 					
 				});
 				
-				// some more setup for all pages except the first
-				$el.children('.page:gt(0)').each(function() {
-					$(this).css('top', headerHeight);
-				});
-				
 				// setup first page
 				current.addClass('current').data('content', true);
-				nav.find('li:first').addClass('selected');
-				
-				$el.find(this.options.selector).last().addClass('last');
-				
-				// bind all listeners
-				this._on({
-					touchstart: "_touchStart",
-					touchmove: "_touchMove",
-					touchend: "_touchEnd",
-					scrollstart: "_scrollStart"
-				});
-
-				$(window).bind({
-					scrollstop: this._scrollStop,
-					resize: this.windowResized
-				});
+				nav.find('a:first').addClass('selected');
+					
+				if (Modernizr.touch){
+					
+					// some more setup for all pages except the first
+					$el.children('.page:gt(0)').each(function() {
+						$(this).css('top', headerHeight);
+					});
+					
+					
+					// load content for second page
+					var nextFile = next.attr('data-url');
+					next.load(nextFile, function() {
+						$(this).data('content', true).css('z-index', 5);
+					});
+					
+					$el.find(this.options.selector).last().addClass('last');
+					
+					// bind all listeners
+					this._on({
+						touchstart: "_touchStart",
+						touchmove: "_touchMove",
+						touchend: "_touchEnd",
+						scrollstart: "_scrollStart"
+					});
+	
+					$(window).bind({
+						scrollstop: this._scrollStop,
+						resize: this.windowResized
+					});
+					
+				} else { // no touch support
+					
+					// some more setup for all pages except the first
+					$el.children('.page:gt(0)').each(function() {
+						//$(this).css({ x: windowWidth });
+					});
+					
+					$('nav a').on({
+						click: this._gotoPage
+					});
+					
+				}
 			},
 			
  
@@ -134,7 +154,7 @@ define(['jqui','events','transit'], function() {
 							diffX = start.coords[0] - currentTouch.coords[0];
 							
 							var newPos = this.curPos - diffX;
-							current.css({ x: newPos });
+							current.css({ x:newPos });
 							
 							if (!this.options.sliding) { // todo: what if user slides first left and then right in one movement?
 								if (diffX > this.options.scrollSupressionThreshold/2) {
@@ -200,15 +220,15 @@ define(['jqui','events','transit'], function() {
 									$(document).scrollTop(headerHeight); // scroll to the point just below the header
 									pageOffset = 0;
 								}
-								next.css({'position': 'relative', 'top': 'auto', 'z-index': '10'});
-								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'});
+								next.css({'position':'relative','top':'auto', 'z-index':'10'});
+								current.css({'position':'fixed','top':pageOffset, 'z-index':'0'});
 								
-								nav.find('li.selected').removeClass('selected').next().addClass('selected');
+								nav.find('a.selected').removeClass('selected').next().addClass('selected');
 								prev = current;
 								current = current.next('.page');
 								next = next.next('.page');
-								next.css({ x: '0' });
-								prev.css({ x: '0' });
+								next.css({ x:'0' });
+								prev.css({ x:'0' });
 								prev.removeClass('current');
 								current.addClass('current');
 								that.loadNeighbours();
@@ -223,15 +243,15 @@ define(['jqui','events','transit'], function() {
 									$(document).scrollTop(headerHeight); // scroll to the point just below the header
 									pageOffset = 0;
 								}
-								prev.css({'position': 'relative', 'top': 'auto', 'z-index': '10'}); // todo: changing position is causing a flash of background color
-								current.css({'position': 'fixed', 'top': pageOffset, 'z-index': '0'});
+								prev.css({'position':'relative', 'top':'auto', 'z-index':'10'}); // todo: changing position is causing a flash of background color
+								current.css({'position':'fixed', 'top':pageOffset, 'z-index':'0'});
 								
-								nav.find('li.selected').removeClass('selected').prev().addClass('selected');
+								nav.find('a.selected').removeClass('selected').prev().addClass('selected');
 								next = current;
 								current = current.prev('.page');
 								prev = prev.prev('.page');
-								next.css({ x: '0' });
-								prev.css({ x: '0' });
+								next.css({ x:'0' });
+								prev.css({ x:'0' });
 								next.removeClass('current');
 								current.addClass('current');
 								that.loadNeighbours();
@@ -250,6 +270,39 @@ define(['jqui','events','transit'], function() {
 			},
 			
 			
+			_gotoPage: function(event) {
+				event.preventDefault();
+				var target = $(this).attr('href');
+				var placeholder = $(target);
+				
+				if (typeof placeholder.attr('data-url') !== 'undefined') {
+					
+					if ( !placeholder.data('content') ) {
+						var nextFile = placeholder.attr('data-url');
+						placeholder.load(nextFile, function() {
+							$(this).data('content', true);
+							that.showPage(placeholder);
+						});
+					} else {
+						that.showPage(placeholder);
+					}
+					
+				} else {
+					
+					console.log('No data-url set for this page');
+					
+				}
+			},
+			
+			
+			showPage: function(newPage) {
+				current.hide();
+				newPage.show().css({'position':'relative', 'top':'auto', 'z-index':'10', 'min-height':windowHeight});
+				past = current;
+				current = newPage;
+			},
+			
+			
 			bounceBack: function() {
 				current.transition({ x: 0 }, function(){
 					slideAnimating = false;
@@ -261,16 +314,14 @@ define(['jqui','events','transit'], function() {
 				if ( !next.data('content') && typeof next.attr('data-url') !== 'undefined' ) {
 					var nextFile = next.attr('data-url');
 					next.load(nextFile, function() {
-						$(this).data('content', true);
-						that.fullHeightMinimum();
+						$(this).data('content', true).css('z-index', 1);
 					});
 				}
 				
 				if ( !prev.data('content') && typeof prev.attr('data-url') !== 'undefined' ) {
 					var prevFile = prev.attr('data-url');
 					prev.load(prevFile, function() {
-						$(this).data('content', true);
-						that.fullHeightMinimum();
+						$(this).data('content', true).css('z-index', 1);
 					});
 				}
 			},
@@ -286,7 +337,6 @@ define(['jqui','events','transit'], function() {
 				
 				if ( $(document).scrollTop() > headerHeight ) {
 					$('.page:not(.current)').each(function() {
-						$(this).css('z-index', 1);
 						$(this).css('top', 0);
 					});
 				} else if ( $(document).scrollTop() < headerHeight ) {
@@ -300,21 +350,6 @@ define(['jqui','events','transit'], function() {
 			windowResized: function() {
 				windowWidth = $(window).width();
 				windowHeight = $(window).height();
-				that.fullHeightMinimum();
-			},
-			
-			
-			fullHeightMinimum: function() {
-				var minPageHeight = windowHeight-headerHeight;
-				if (current.outerHeight() < minPageHeight) {
-					current.css('min-height', minPageHeight);
-				}
-				if (next.outerHeight() < minPageHeight) {
-					next.css('min-height', minPageHeight);
-				}
-				if (prev.outerHeight() < minPageHeight) {
-					prev.css('min-height', minPageHeight);
-				}
 			},
 			
 			
