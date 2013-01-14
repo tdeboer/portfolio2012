@@ -21,7 +21,7 @@ require.config({
 require(["jquery", 'swipe'], 
 	function($, swipe) {
 	
-		$("body").swipeable();
+		$(".content").swipeable();
 		
 		
 		// Special page outside the swipe interaction
