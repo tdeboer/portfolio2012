@@ -1,4 +1,4 @@
-define(['jqui','events','transit'], function() {
+define(['jqui','transit'], function() {
 
 	/*
 	todo:
@@ -19,7 +19,7 @@ define(['jqui','events','transit'], function() {
 			prev, // previous page
 			last, // previous visible page
 			nav,
-			logging = true;
+			logging = false;
 			
 	
 		$.widget( "custom.swipeable", {
@@ -34,7 +34,7 @@ define(['jqui','events','transit'], function() {
 				navSelector: 'nav',
 				scrollSupressionThreshold: 20, // More than this horizontal displacement, and we will suppress scrolling.
 				swipeThreshold: 100,  // Swipe horizontal displacement must be more than this to go to next page
-				verticalDistanceThreshold: 60, // Swipe vertical displacement must be less than this.
+				verticalDistanceThreshold: 5, // Swipe vertical displacement must be less than this.
 				sliding: false,
 				swipeBoundry: 40, // Stop the swipe at this point if there is nothing to swipe to
 				disableSwipe: false,
@@ -100,12 +100,10 @@ define(['jqui','events','transit'], function() {
 					this._on({
 						touchstart: "_touchStart",
 						touchmove: "_touchMove",
-						touchend: "_touchEnd",
-						scrollstart: "_scrollStart"
+						touchend: "_touchEnd"
 					});
 	
 					$(window).bind({
-						scrollstop: this._scrollStop,
 						resize: this.windowResized
 					});
 					
@@ -125,6 +123,7 @@ define(['jqui','events','transit'], function() {
 			
  
 			_touchStart: function(event) {
+				event.stopImmediatePropagation();
 				if (!slideAnimating) {
 					this.curPos = parseInt( this.element.css('x') );
 					
@@ -137,70 +136,28 @@ define(['jqui','events','transit'], function() {
 			
 			
 			_touchMove: function(event) {
-				var $el = this.element;
-				var data = event.originalEvent.touches[0];
-				var start = this.swipeStart;
-				var currentTouch = { coords: [data.pageX, data.pageY] };
-				var diffX = start.coords[0] - currentTouch.coords[0];
-				var diffY = start.coords[1] - currentTouch.coords[1];
-				//$('.debug').text('');
+				event.stopImmediatePropagation();
+				var diffX = this.swipeStart.coords[0] - event.originalEvent.touches[0].pageX;
+				var diffY = this.swipeStart.coords[1] - event.originalEvent.touches[0].pageY;
 				
-				if (!slideAnimating) { // check if a page is animating
-					that._log('slideanimating:false');
-					if (!scr) {that._log('not scrolling');
-						if( (Math.abs(diffX) > this.options.scrollSupressionThreshold && Math.abs(diffY) < this.options.verticalDistanceThreshold) || this.options.sliding ) {
-							that._log('swiping');
-							event.preventDefault();
-							diffX = start.coords[0] - currentTouch.coords[0];
-							
-							var newPos = this.curPos - diffX;
-							current.css({ x:newPos });
-							
-							if (!this.options.sliding) { // todo: what if user slides first left and then right in one movement?
-								if (diffX > this.options.scrollSupressionThreshold/2) {
-									if (current.hasClass('last')) {
-										$('.shutter').css('z-index', 5); // hide pages underneath with another dummy page
-									} else {
-										next.css('z-index', 5);
-										$('.shutter').css('z-index', 0);
-									}
-								} else if ( diffX < ((this.options.scrollSupressionThreshold/2)*-1) ){
-									if (current.hasClass('first')) {
-										$('.shutter').css('z-index', 5);
-									} else {
-										prev.css('z-index', 5);
-										$('.shutter').css('z-index', 0);
-									}
-								}
-							}
-							
-							this.options.sliding = true;
-							this.swipeStop = currentTouch;
-						} else if (Math.abs(diffY) >= 5) {that._log('scrolling');
-							scr = true;
-						}
-					}
-					
-				} else {
-					that._log('slideanimating:true');
-					// prevent scroll because a page is animating
+				if( Math.abs(diffY) < this.options.verticalDistanceThreshold || this.options.sliding ) {
 					event.preventDefault();
-					
+					current.css({ x: this.curPos - diffX });
+					this.options.sliding = true;
 				}
-				
-				
 				
 			},
 			
 			
-			// todo: 
+			// todo: unbind listeners instead of slideAnimating
 			_touchEnd: function(event) {
 				// check if a swipe occurred
-				if (this.options.sliding && !slideAnimating) {that._log('swiped:true');
+				if (this.options.sliding && !slideAnimating) {
+					that._log('swiped:true');
 					
 					var start = this.swipeStart,
-						end = this.swipeStop,
-						diff = start.coords[0] - end.coords[0],
+						end = event.originalEvent.changedTouches[0],
+						diff = start.coords[0] - end.pageX,
 						$el = this.element,
 						scrolledPassHeader = $(document).scrollTop() > headerHeight;
 					
