@@ -19,7 +19,9 @@ define(['jqui','transit'], function() {
 			prev, // previous page
 			last, // previous visible page
 			nav,
-			logging = false;
+			logging = false,
+			scrolling = false,
+			sliding = false;
 			
 	
 		$.widget( "custom.swipeable", {
@@ -35,10 +37,8 @@ define(['jqui','transit'], function() {
 				scrollSupressionThreshold: 20, // More than this horizontal displacement, and we will suppress scrolling.
 				swipeThreshold: 100,  // Swipe horizontal displacement must be more than this to go to next page
 				verticalDistanceThreshold: 5, // Swipe vertical displacement must be less than this.
-				sliding: false,
 				swipeBoundry: 40, // Stop the swipe at this point if there is nothing to swipe to
 				disableSwipe: false,
-				scrolling: false,
 				timer: null
 			},
 			
@@ -83,9 +83,11 @@ define(['jqui','transit'], function() {
 				if (Modernizr.touch){
 					
 					// some more setup for all pages except the first
+					/*
 					$el.children('.page:gt(0)').each(function() {
 						$(this).css('top', headerHeight);
 					});
+					*/
 					
 					
 					// load content for second page
@@ -140,10 +142,10 @@ define(['jqui','transit'], function() {
 				var diffX = this.swipeStart.coords[0] - event.originalEvent.touches[0].pageX;
 				var diffY = this.swipeStart.coords[1] - event.originalEvent.touches[0].pageY;
 				
-				if( Math.abs(diffY) < this.options.verticalDistanceThreshold || this.options.sliding ) {
+				if( Math.abs(diffY) < this.options.verticalDistanceThreshold || sliding ) {
 					event.preventDefault();
 					current.css({ x: this.curPos - diffX });
-					this.options.sliding = true;
+					sliding = true;
 				}
 				
 			},
@@ -152,7 +154,7 @@ define(['jqui','transit'], function() {
 			// todo: unbind listeners instead of slideAnimating
 			_touchEnd: function(event) {
 				// check if a swipe occurred
-				if (this.options.sliding && !slideAnimating) {
+				if (sliding && !slideAnimating) {
 					that._log('swiped:true');
 					
 					var start = this.swipeStart,
@@ -161,7 +163,7 @@ define(['jqui','transit'], function() {
 						$el = this.element,
 						scrolledPassHeader = $(document).scrollTop() > headerHeight;
 					
-					this.options.sliding = false;
+					sliding = false;
 					scr = false;
 					slideAnimating = true;
 					//$('.debug').text(current.attr('id'));

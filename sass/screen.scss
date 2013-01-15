@@ -8,10 +8,6 @@ body {
 	position: relative;
 	background: #676767 repeat-x fixed url('../gfx/bg-noise-half.png');
 	overflow-x: hidden; /* does it work on mobile?? needed? */
-	@include respond-to(laptop) {
-		width: 78%;
-		margin: 0 auto;
-	}
 }
 
 a {
@@ -173,12 +169,12 @@ nav {
 		overflow: hidden;
 		text-indent: 10px;
 		text-decoration: none;
+		margin-right: 4px;
 		@include respond-to(tablet-portrait) {
 			padding: 0.2em 0.3em;
 			width: auto;
 			height: auto;
 			background-color: transparent;
-			margin-right: 4px;
 			overflow: auto;
 		}
 		&.selected, &:hover {
