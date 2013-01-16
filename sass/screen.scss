@@ -5,9 +5,7 @@ body {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 100%;
 	color: #3b3b3b;
-	position: relative;
 	background: #676767 repeat-x fixed url('../gfx/bg-noise-half.png');
-	overflow-x: hidden; /* does it work on mobile?? needed? */
 }
 
 a {
@@ -41,25 +39,29 @@ video {
 	max-width: 100%;
 }
 
-.shutter {
-	background: #676767 repeat-x fixed url('../gfx/bg-noise-half.png');
-	position: fixed;
-	height: 100%;
-	top: 0;
-	right: 0;
-	left: 0;
+.front {
+	-webkit-transform: translateZ(0);
+}
+
+.wrapper {
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .page,
 .special-page {
-	padding: 6.25% 6.25% 12.5%; /* 20 % 320 */
-	position: fixed;
+	/*padding: 6.25% 6.25% 12.5%; /* 20 % 320 */
+	position: relative;
 	top: 0;
 	z-index: 1;
+	display: inline-block;
+	white-space: normal;
+	vertical-align: top;
 	-webkit-transform: translateZ(0);
 	background-color: #eee;
+	margin-right: -4px;
+	overflow: hidden;
 	@include single-box-shadow;
-	/* @include debug-vertical-alignment; */
 }
 
 .special-page {
@@ -69,9 +71,6 @@ video {
 }
 
 .page.first {
-	top: auto;
-	position: relative;
-	display: block;
 	z-index: 10;
 }
 

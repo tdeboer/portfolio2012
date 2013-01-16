@@ -1,4 +1,4 @@
-define(['jqui','transit'], function() {
+define(['jqui','events','transit'], function() {
 
 	/*
 	todo:
@@ -29,6 +29,7 @@ define(['jqui','transit'], function() {
 			swipeStop: {},
 			pos: null,
 			preventScroll: false,
+			curPos: 0,
 			
 			// default options
 			options: {
@@ -62,7 +63,9 @@ define(['jqui','transit'], function() {
 						$page.data('content', false);
 					}
 					
-					$page.css('min-height', windowHeight);
+					$('.header').hide();
+					//$page.css('min-height', 356);
+					$(this).width(windowWidth);
 					
 					// add navigation
 					// todo: do not build dynamically
@@ -83,20 +86,23 @@ define(['jqui','transit'], function() {
 				if (Modernizr.touch){
 					
 					// some more setup for all pages except the first
-					/*
-					$el.children('.page:gt(0)').each(function() {
-						$(this).css('top', headerHeight);
+					$el.children('.page:gt(0)').each(function(i) {
+						//$(this).css('top', headerHeight);
+						//SIMPLE $(this).find('article').hide();
+						
+						//SIMPLE $(this).css('left', (i+1)*windowWidth);
+						$(this).css('height', windowHeight);
 					});
-					*/
 					
 					
 					// load content for second page
 					var nextFile = next.attr('data-url');
 					next.load(nextFile, function() {
-						$(this).data('content', true).css('z-index', 5);
+						$(this).data('content', true);
 					});
 					
 					$el.find(this.options.selector).last().addClass('last');
+					
 					
 					// bind all listeners
 					this._on({
@@ -106,6 +112,7 @@ define(['jqui','transit'], function() {
 					});
 	
 					$(window).bind({
+						scrollstop: this._scrollStop,
 						resize: this.windowResized
 					});
 					
@@ -127,12 +134,14 @@ define(['jqui','transit'], function() {
 			_touchStart: function(event) {
 				event.stopImmediatePropagation();
 				if (!slideAnimating) {
-					this.curPos = parseInt( this.element.css('x') );
-					
 					// set starting point of the potential swipe
 					var data = event.originalEvent.touches[0];
 					
 					this.swipeStart = { coords: [data.pageX, data.pageY] };
+					
+					//SIMPLE prev.find('article').show();
+					//SIMPLE next.find('article').show();
+					next.height('auto');
 				}
 			},
 			
@@ -144,7 +153,7 @@ define(['jqui','transit'], function() {
 				
 				if( Math.abs(diffY) < this.options.verticalDistanceThreshold || sliding ) {
 					event.preventDefault();
-					current.css({ x: this.curPos - diffX });
+					this.element.css({ x: this.curPos - diffX });
 					sliding = true;
 				}
 				
@@ -160,62 +169,51 @@ define(['jqui','transit'], function() {
 					var start = this.swipeStart,
 						end = event.originalEvent.changedTouches[0],
 						diff = start.coords[0] - end.pageX,
-						$el = this.element,
-						scrolledPassHeader = $(document).scrollTop() > headerHeight;
+						$el = this.element;
 					
 					sliding = false;
-					scr = false;
+					//SIMPLE scr = false;
 					slideAnimating = true;
-					//$('.debug').text(current.attr('id'));
-					
 					// snap to point
 					if (Math.abs(diff) > this.options.swipeThreshold){that._log('enough swipe');
 						if (diff > 0 && next.length) { // swipe to next
 							that._log('swipe next');
-							current.transition({ x: -1*windowWidth }, function() {
+							newPos = this.curPos - windowWidth;
+							$el.transition({ x: newPos }, function() {
+								that.curPos = newPos;
 								slideAnimating = false;
-								var pageOffset = headerHeight - $(document).scrollTop();
-								if (scrolledPassHeader) {
-									$(document).scrollTop(headerHeight); // scroll to the point just below the header
-									pageOffset = 0;
-								}
-								next.css({'position':'relative','top':'auto', 'z-index':'10'});
-								current.css({'position':'fixed','top':pageOffset, 'z-index':'0'});
+								//SIMPLE current.find('article').hide();
 								
-								nav.find('a.selected').removeClass('selected').next().addClass('selected');
+								current.height(windowHeight);
+								$(document).scrollTop(1);
+								next.transition({ y: 0 });
+								
+								//SIMPLE nav.find('a.selected').removeClass('selected').next().addClass('selected');
 								prev = current;
 								current = current.next('.page');
 								next = next.next('.page');
-								next.css({ x:'0' });
-								prev.css({ x:'0' });
-								prev.removeClass('current');
-								current.addClass('current');
+
+								//SIMPLE prev.removeClass('current');
+								//SIMPLE current.addClass('current');
 								that.loadNeighbours();
 							});
 							
 						} else if (diff < 0 && prev.length) { // swipe to previous
 							that._log('swipe prev');
-							current.transition({ x: windowWidth }, function() {
+							newPos = this.curPos + windowWidth;
+							$el.transition({ x: newPos }, function() {
+								that.curPos = newPos;
 								slideAnimating = false;
-								var pageOffset = headerHeight - $(document).scrollTop();
-								if (scrolledPassHeader) {
-									$(document).scrollTop(headerHeight); // scroll to the point just below the header
-									pageOffset = 0;
-								}
-								prev.css({'position':'relative', 'top':'auto', 'z-index':'10'}); // todo: changing position is causing a flash of background color
-								current.css({'position':'fixed', 'top':pageOffset, 'z-index':'0'});
 								
-								nav.find('a.selected').removeClass('selected').prev().addClass('selected');
+								//SIMPLE nav.find('a.selected').removeClass('selected').prev().addClass('selected');
 								next = current;
 								current = current.prev('.page');
 								prev = prev.prev('.page');
-								next.css({ x:'0' });
-								prev.css({ x:'0' });
-								next.removeClass('current');
-								current.addClass('current');
+
+								//SIMPLE next.removeClass('current');
+								//SIMPLE current.addClass('current');
 								that.loadNeighbours();
 							});
-							
 						} else {that._log('no page available');
 							// no page available
 							this.bounceBack();
@@ -226,6 +224,7 @@ define(['jqui','transit'], function() {
 					}
 					
 				}
+				
 			},
 			
 			
@@ -263,7 +262,7 @@ define(['jqui','transit'], function() {
 			
 			
 			bounceBack: function() {
-				current.transition({ x: 0 }, function(){
+				this.element.transition({ x: this.curPos }, function(){
 					slideAnimating = false;
 				});
 			},
@@ -292,9 +291,11 @@ define(['jqui','transit'], function() {
 			
 			
 			_scrollStop: function(event) {
-				scr = false;
+				//SIMPLE scr = false;
 				
-				if ( $(document).scrollTop() > headerHeight ) {
+				next.css({ y: $(document).scrollTop() }).height(windowHeight);
+				
+				/*SIMPLE if ( $(document).scrollTop() > headerHeight ) {
 					$('.page:not(.current)').each(function() {
 						$(this).css('top', 0);
 					});
@@ -303,6 +304,7 @@ define(['jqui','transit'], function() {
 						$(this).css('top', headerHeight-$(document).scrollTop());
 					});
 				}
+				*/
 			},
 			
 			
