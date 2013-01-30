@@ -8,10 +8,7 @@ One navigation with all the pages, updating when sliding.
 Load pages asynchronous
 
 Todo:
-- make seperate plugin and add listener to the swipe
-- use var instead of options
-- modernizr checks
-- navigate directly to project by hash in url
-- set nav fixed when scrolling down
-- navigating without touch
-- optimize for slower android devices
+- make seperate swipe event and add listener to the swipe
+- setup archive of projects
+- interval touch move to regulate firing
+- make tags clickable and link to project with that same tag
