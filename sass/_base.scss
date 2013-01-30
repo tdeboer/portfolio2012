@@ -2,11 +2,18 @@
 @import "compass";
 @import "compass/reset";
 @import "font-awesome";
-@import url(http://fonts.googleapis.com/css?family=Bitter:400,700,400italic);
+@import url(http://fonts.googleapis.com/css?family=Bitter);
 @include establish-baseline;
 
 $contrasted-dark-default: #000;
 $contrasted-light-default: #fff;
+$contrasted-lightness-threshold: 45%;
+
+/* reset corrections */
+sup {
+	vertical-align: super;
+	font-size: smaller;
+}
 
 
 @mixin button($position, $color) {
@@ -53,7 +60,7 @@ $contrasted-light-default: #fff;
 			@content;
 		}
 	} @else if $device == desktop {
-		@media (min-width: 1280px) {
+		@media (min-width: 1300px) {
 			@content;
 		}
 	}
@@ -85,7 +92,6 @@ $contrasted-light-default: #fff;
 		display: block;
 	}
 	.icon {
-		font-size: 48px;
 		vertical-align: middle;
 	}
 }

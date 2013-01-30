@@ -6,7 +6,8 @@ require.config({
 	paths: {
 		"jqm": "jquery.mobile",
 		"jqui":	"jquery-ui-1.9.2.custom.min",
-		"swipe": "jquery.ui.pageswipe",
+		"swipe": "jquery.ui.pageswipe-requirejs",
+		"scrollTo": "jquery.scrollTo-1.4.3.1-min",
 		"events": "jquery.custom.events"
 	},
 	modules: [
@@ -14,68 +15,42 @@ require.config({
             name: "main",
             exclude: ["jquery"]
         }
-    ],
-    urlArgs: "bust=" +  (new Date()).getTime()
+    ]
 });
 
 require(["jquery", 'swipe'], 
 	function($, swipe) {
 	
-		$("body").swipeable();
+		$(".wrapper").swipeable({ load: false });
+		$('.special-page').css('min-height',$(window).height());
+		
+		if (Modernizr.touch) {
+		
+			// Special page outside the swipe interaction
+			$('.btn-about').click(function(event) {
+				event.preventDefault();
+				
+				$('.special-page').show();
+				$('.wrapper').hide();
+				
+				
+			});
+			
+			// Return to projects
+			$('.btn-back').click(function(event) {
+				event.preventDefault();
+				
+				$('.wrapper').show(0, function() {
+					$('.special-page').hide();
+				});
+				
+			});
+		
+		}
 		
 		
-		// Special page outside the swipe interaction
-		$('.btn-about').click(function(event) {
-			event.preventDefault();
-			
-			$('.special-page').show();
-			
-			$('.special-page').css({
-				rotateY: '-90deg'
-			});
-			
-			// animate current page
-			// todo: ease back (Vera's slides)
-			$('.header, nav, .page').transition({
-				rotateY: '90deg'
-			}, 400, 'linear', function() {
-				
-				this.css('display', 'none');
-				// animate about-page
-				$('.special-page').transition({
-					rotateY: '0deg'
-				}, 400, 'linear');
-				
-			});
-			
-		});
-		
-		// Return to projects
-		$('.btn-back').click(function(event) {
-			event.preventDefault();
-			
-			// show about-page
-			$('.front').css('display', 'block');
-			
-			
-			$('.front').css({
-				rotateY: '-90deg'
-			});
-			
-			// animate current page
-			// todo: ease back (Vera's slides)
-			$('.special-page').transition({
-				rotateY: '90deg'
-			}, 400, 'linear', function() {
-				
-				this.css('display', 'none');
-				// animate about-page
-				$('.front').transition({
-					rotateY: '0deg'
-				}, 400, 'linear');
-				
-			});
-			
+		$('div.code').click(function() {
+			$(this).disableSelection().find('.simple, .tech').toggle(); // todo: css animation
 		});
 		
 		
