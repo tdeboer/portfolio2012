@@ -1,38 +1,116 @@
 <header>
 	<hgroup>
-		<h1>Portfolio 2012</h1>
-		<h2>Swipe!</h2>
+		<h1>Portfolio 2013</h1>
+		<h2>Responsive in design én interface.</h2>
+		<div class="date">
+			<i class="icon-calendar"></i>
+			<span>2012 - 2013</span>
+		</div>
 	</hgroup>
+	
+	<figure class="full">
+		<img src="gfx/responsive-web-design.png" />
+	</figure>
 </header>
 
-<article>
-	<section>
-		<p>Vind je deze site goed? Maak je eigen site op dezelfde manier met de jQuery widget.Knap staaltje Droste-effect; een portfolio-item in een portfolio-item!</p>
+<article>	
+	<p>Wat een mooi Droste-effect; een portfolio-item in een portfolio-item! Bij het maken van dit portfolio heb ik een <em>responsive design</em> gecombineerd met een zelfgeschreven jQuery UI widget.</p>
+	
+	<p>De layout van het portfolio is geoptimaliseerd voor het apparaat waarop de website wordt bekeken. Het gebruik van een <em>flexibel 'grid'</em> en aangepaste typografie zorgt ervoor dat de layout goed blijft, zelfs wanneer de website wordt bekeken op een mobiele telefoon of een 27 inch beeldscherm.</p>
+
+<figure class="cover">
+	<img src="gfx/responsive-web-design.png" />
+	<figcaption><i class="icon-angle-up"></i> Ja klopt, dat is responsive.</figcaption>
+</figure>
+
+	<p>De interface is ook responsive. De manier waarop je door de pagina's navigeert, is afhankelijk van het apparaat. Op telefoon en tablet kan je door de projecten bladeren door met je vinger de pagina te 'swipen'. Zo krijgt de gebruiker het gevoel dat hij/zij een native app onder de duim heeft.</p>
+	
+	<p>De gedachte hierachter is dat de context waarin de portfolio-website bezocht wordt, verschillend is per apparaat. Deze context definiëren per apparaat was de eerste stap in dit project.</p>
+	
+	<div>
+		<div class="columned">
+			<div>
+				<div class="leading-icon"><i class="icon-mobile-phone icon-3x"></i></div>
+				<p>Te beginnen bij de mobiele gebruiker omdat voor dit project een <em>mobile first</em> benadering is gekozen.<br />
+				De mobiele gebruiker heeft geen behoefte aan alle details maar wil een snelle indruk opdoen van het gepresenteerde werk. Een desktop website komt op een mobiele telefoon extra statisch over. De gebruiker is immers gewend aan het besturingssysteem van de telefoon waarbij je met touch en gestures intuïtief kan navigeren door menu's en pagina's. Een andere manier van navigeren door de portfolio-items is daarom gewenst.</p>
+			</div>
+		</div>
+		<div class="columned">
+			<div>
+				<div class="leading-icon"><i class="icon-tablet icon-3x"></i></div>
+				<p>Dit argument gaat ook op voor het browsen op een tablet en werkt beter omdat er meer ruimte is voor gestures.
+Ten opzichte van de telefoon wordt de tablet meer gebruikt om dingen te showen. Hierbij zijn behalve een soepele manier van navigeren, grotere afbeeldingen en meer witruimte in de layout nodig.</p>
+			</div>
+		</div>
+		<div class="columned">
+			<div>
+				<div class="leading-icon"><i class="icon-desktop icon-3x"></i></div>
+				<p>Wanneer het portfolio wordt bekeken op een desktop (of laptop), is het belangrijk om een compleet beeld van de projecten te geven. Dit geeft de mogelijkheid om wat meer uit te wijden over details en meer informatie te tonen.</p>
+			</div>
+		</div>
+	</div>
+	
+	<p>Hieronder treed ik wat meer in detail over deze website. Mocht je dat niet interessant vinden, dan is… NU het juiste moment om door te gaan naar het volgende project.</p>
+	
+	<h3>Voor de liefhebber</h3>
+	<p>Bij een flexibele layout zijn de afmetingen van de viewport leidend maar bij een responsive interface is het relevanter om te kijken naar de mogelijke features. Hiervoor gebruik ik <a href="http://modernizr.com/">Modernizr</a> en check ik bijvoorbeeld op beschikbaarheid van touch events en css3 animations.<br />
+	Apparaten met ondersteuning voor touch events laten je door de pagina's heen swipen en worden de volgende en vorige pagina asynchroon ingeladen. Dit is geïnspireerd op bestaande <em>frameworks</em> voor mobiele webapps zoals <a href="http://jquerymobile.com/">jQuery Mobile</a> en <a href="http://www.jqtouch.com/">JQTouch</a>.<br />
+	Een grote uitdaging bij de navigatie was om het swipen niet in conflict te laten komen met het scrollen. Swipen en scrollen liggen dicht bij elkaar en is onder andere moeilijk omdat je vinger een stuk minder nauwkeurige input levert dan een cursor. Terwijl je met je vinger over het scherm beweegt, wordt met de volgende berekening gekeken of de beweging een scroll- of een swipe-actie moet veroorzaken:</p>
+
+<p>
+	<div class="code">
+
+		<div class="simple">
+		<span class="code-operator">Als</span> ( het <span class="code-var">verschil</span> tussen de <span class="code-var">eerste aanraking</span> en de <span class="code-var">huidige aanraking</span> ) <span class="code-operator">groter is dan</span> de variabele voor <span class="code-var">scrollonderdrukking</span>, <br />
+		verplaats dan de <span class="code-object">pagina</span> evenredig met het <span class="code-var">verschil</span> van de eerste en huidige aanraking.
+		</div>
+
+		<div class="tech">
+		<span class="code-var">var</span> diffX = &shy;<span class="code-var">this</span>.swipeStart.coords[<span class="code-number">0</span>] - event.originalEvent.touches[<span class="code-number">0</span>].pageX;<br />
+if ( sliding || <span class="code-operator">Math</span>.<span class="code-object">abs</span>(diffX) > <span class="code-var">this</span>.options.scrollSupressionThreshold )<br />
+{<br />
+&nbsp;&nbsp;&nbsp;&nbsp;current.<span class="code-object">css</span>({ x: <span class="code-number">0</span> - diffX });<br />
+}<br />
+		</div>
+
+	</div>
+	<figcaption>
+		<i class="icon-angle-up"></i> (Klik om de code te zien)
+	</figcaption>
+</p>
+	
+	<p>Een andere grote uitdaging was om de scrollpositie van de huidige pagina niet de zichtbaarheid te laten beïnvloeden van de volgende pagina. Wanneer je op pagina A naar beneden scrollt en daarna naar project B swipe-t, wil je dat pagina B weer bovenaan, bij de titel, begint. Dit wordt gedaan door de huidige pagina relatief te positioneren en alle andere fixed. Na het afronden van een swipe-actie wordt:<br />
+	- het document helemaal naar boven gescrolld<br />
+	- de nieuwe huidige pagina relatief gepositioneerd<br />
+	- de nieuwe huidige pagina 'bovenop' de andere pagina's gepositioneerd
+	</p>
+	
+	<p>In eerste instantie dacht ik elke pagina afzonderlijk scrollbaar te maken. Dit zorgde voor problemen in sommige browsers zoals het gebrek aan 'momentum-scrollen' op iOS &lt;5 en meerdere scrollbars (pagina én document) in mobiele browsers waar de scrollbars zichtbaar zijn. Ook de feature van iOS dat je bovenaan het scherm kan tappen om naar de bovenkant van de pagina te scrollen, gaat dan verloren.<br />
+De oplossing is om de pagina met relatieve positie het scrollbare gebied van het document te laten bepalen.</p>
+	
+	<p>Behalve een paar bugs wordt er gewerkt aan betere ondersteuning van langzamere Android apparaten. Andere features op de wensenlijst zijn geavanceerde animaties van de pagina zoals inzoomen <span class="strike">en het implementeren van de <a href="http://demos.flesler.com/jquery/scrollTo/">scrollTo plugin</a> voor de interface zonder touch ondersteuning.</span>(done!)</p>
 		
-		<p>Mobile first
-		Responsive design
-		Jquery-ui widget
-		Modernizr
-		Sass / Compass
-		RequireJS
-		</p>
-		
-		<h3>Challenges</h3>
-		<p>How to prevent conflicts between swiping and scrolling?
-		Css that permits horizontal scrolling.</p>
-		
-		<p>Mobile usecase: quickly showing some work and give an impression of your work and style</p>
-		
-		<p>Tablet usecase: show off</p>
-		
-		<p>Screen: elaborate and show details which give the user a better view of me</p>
-	</section>
 </article>
 	
 <footer>
-	<ul>
-		<li>jQuery</li>
-		<li>Responsive design</li>
-		<li>Mobile</li>
-	</ul>
+
+	<section>
+		<ul class="actions">
+			<li>
+				<a href="https://github.com/tdeboer/pageswipe">
+					<span class="icon"><i class="icon-share"></i></span>
+					<span>jQuery UI widget</span>
+				</a>
+			</li>
+		</ul>
+	</section>
+	
+	<section>
+		<ul class="related">
+			<li>jQuery</li>
+			<li>Responsive design</li>
+			<li>Mobile</li>
+		</ul>
+	<section>
+	
 </footer>

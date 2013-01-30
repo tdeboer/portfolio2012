@@ -1,5 +1,6 @@
 @charset "UTF-8";
 @import "base";
+@import "pageswipe";
 
 body {
 	font-family: Helvetica, Arial, sans-serif;
@@ -18,12 +19,24 @@ a {
 }
 
 p,
-figure {
+article ul {
 	margin-bottom: 12px;
+	@include respond-to(laptop) {
+		margin-bottom: 24px;
+	}
 }
 
+figure,
+.embedded-video {
+	margin-bottom: 24px;
+	@include respond-to(laptop) {
+		margin-bottom: 36px;
+	}
+}
+
+
 figure {
-	background-color: rgba(255, 255, 255, 0.7);
+	background-color: rgba(255, 255, 255, 0.5);
 	padding: 12px;
 	@include border-radius(3px);
 	line-height: 0;
@@ -41,49 +54,51 @@ video {
 	max-width: 100%;
 }
 
-.shutter {
-	background: #676767 repeat-x fixed url('../gfx/bg-noise-half.png');
-	position: fixed;
-	height: 100%;
-	top: 0;
-	right: 0;
-	left: 0;
+.no-touch .page {
+	margin-bottom: 48px;
+	@include respond-to(desktop) {
+		padding: 12.5%;
+	}
 }
 
-.page,
 .special-page {
 	padding: 6.25% 6.25% 12.5%; /* 20 % 320 */
-	position: fixed;
+	position: relative;
 	top: 0;
-	z-index: 1;
-	-webkit-transform: translateZ(0);
+	z-index: 0;
+	/* -webkit-transform: translateZ(0); */
 	background-color: #eee;
 	@include single-box-shadow;
-	/* @include debug-vertical-alignment; */
+	.header {
+		display: none;
+	}
+	@include respond-to(desktop) {
+		padding: 12.5%;
+	}
 }
 
-.special-page {
+.touch .special-page {
 	display: none;
+	z-index: 40;
 	position: absolute;
-	top: 0em;
+	padding: 0;
+	.header {
+		display: block;
+		h1 {
+			margin-right: 3em;
+		}
+	}
+	article {
+		padding: 6.25% 6.25% 12.5%;
+	}
 }
-
-.page.first {
-	top: auto;
-	position: relative;
-	display: block;
-	z-index: 10;
-}
-
 
 .header {
 	position: relative;
-	z-index: 300;
+	z-index: 30;
 	line-height: 1em;
-	@include respond-to(laptop) {
-		height: 3em;
-	}
 	color: #fff;
+	background-color: #111;
 	@include background-image(linear-gradient(#3C3C3C, #111));
 	border: {
 		style: solid;
@@ -93,73 +108,76 @@ video {
 		top-color: #3c3c3c;
 		bottom-color: #111;
 	}
-		a {
-			color: #fff;
-			@include respond-to(tablet-portrait) {
-				color: #eee;
-			}
-		}
-		h1 {
-			font-weight: bold;
-			margin: 0.6em 10em 0.6em 2.4em;
-			padding: 0;
-			@include respond-to(tablet-portrait) {
-				float: left;
-				margin-right: 2.4em;
-			}
-		}
-		.logo {
-			@extend .btn-prep;
-			left: 0.6em;
-			top: 0.6em;
-			width: 18px;
-			height: 18px;
-		}
-		.btn-back {
-			@include button(right, #555);
-			top: 0.3em;
-		}
-		.btn-about {
-			@include button(right, #555);
-			top: 0.3em;
-			@include respond-to(tablet-portrait) {
-				float: right;
-				position: relative !important;
-				display: inline;
-				font-weight: normal !important;
-				border: 0;
-				right: 0;
-				top: 0;
-				@include background-image(none);
-				@include single-box-shadow(none);
-				span {
-					border: 0;
-					text-shadow: none;
-					padding: 0.2em 0.3em;
-				}
-				&.selected, &:hover {
-					@include respond-to(tablet-portrait) {
-						color: #fff;
-						text-decoration: underline;
-					}
-				}
-			}
-		}
-
+	a {
+		color: #fff;
+	}
+	h1 {
+		font-weight: bold;
+		margin: 0.6em 10em 0.6em 2.4em;
+		padding: 0;
+	}
+	.logo {
+		@extend .btn-prep;
+		left: 0.6em;
+		top: 0.5em;
+		width: 18px;
+		height: 18px;
+		z-index: 30;
+	}
+	.btn-back, .btn-about {
+		@include button(right, #555);
+		top: 0.3em;
+		line-height: 0.8em;
+	}
+	@include respond-to(laptop) {
+		height: 3em;
+	}
 }
 
+.no-touch .header {
+	position: fixed;
+	width: 100%;
+	a {
+		color: #eee;
+	}
+	h1 {
+		float: left;
+		margin-right: 2.4em;
+	}
+	.btn-about {
+		line-height: 1em;
+		float: right;
+		position: relative !important;
+		display: inline;
+		font-weight: normal !important;
+		border: 0;
+		right: 0;
+		top: 0;
+		margin: 0.55em;
+		z-index: 30;
+		@include background-image(none);
+		@include single-box-shadow(none);
+		span {
+			border: 0;
+			text-shadow: none;
+			padding: 0.2em 0.3em;
+		}
+		&.selected, &:hover {
+			color: #fff;
+			text-decoration: underline;
+		}
+	}
+}
 
 nav {
-	position: relative;
+	position: fixed;
+	bottom: 0;
 	z-index: 20;
 	background-color: #111;
 	text-align: center;
 	height: 1.5em;
+	width: 100%;
 	font-size: 0.9em;
-	@include respond-to(tablet-portrait) {
-		float: right;
-		background-color: transparent;
-	}
 	a {
 		display: inline-block;
 		width: 8px;
@@ -169,21 +187,28 @@ nav {
 		overflow: hidden;
 		text-indent: 10px;
 		text-decoration: none;
-		margin-right: 4px;
-		@include respond-to(tablet-portrait) {
-			padding: 0.2em 0.3em;
-			width: auto;
-			height: auto;
-			background-color: transparent;
-			overflow: auto;
-		}
+		margin-right: 2px;
 		&.selected, &:hover {
 			background-color: #eee;
-			@include respond-to(tablet-portrait) {
-				background-color: transparent;
-				color: #ffffff;
-				text-decoration: underline;
-			}
+		}
+	}
+}
+
+.no-touch nav {
+	background-color: transparent;
+	position: relative;
+	text-align: right;
+	margin: 0.5em;
+	a {
+		padding: 0.2em 0.3em;
+		width: auto;
+		height: auto;
+		background-color: transparent;
+		overflow: auto;
+		&.selected, &:hover {
+			background-color: transparent;
+			color: #ffffff;
+			text-decoration: underline;
 		}
 	}
 }
@@ -220,15 +245,26 @@ em {
 header {
 	hgroup {
 		margin-bottom: 1.4em;
+		@include respond-to(laptop) {
+			width: 60%;
+		}
 	}
 	
 	figure {
 		display: none;
 		padding: 0;
-		max-height: 300px;
+		max-height: 360px;
 		overflow: hidden;
+		margin-bottom: 48px;
+		background: none;
 		@include respond-to(laptop) {
 			display: block;
+		}
+		img {
+			@include border-radius(3px);
+		}
+		&.full {
+			max-height: 100%;
 		}
 	}
 	
@@ -253,12 +289,23 @@ header {
 	}
 }
 
+.date {
+	display: none;
+	@include respond-to(tablet-portrait) {
+		display: block;
+	}
+}
+
 article {
 	@include respond-to(laptop) {
 		display: inline-block;
 		max-width: 60%;
 		margin-right: 5%;
 		vertical-align: top;
+	}
+	@include respond-to(desktop) {
+		max-width: 55%;
+		margin-right: 10%;
 	}
 	
 	p, li, a {
@@ -293,20 +340,26 @@ article {
 	&:last-child {
 		margin-bottom: 24px;
 	}
-}
-
-.icon-block {
-	.leading-icon, p {
+	ul {
+		margin-bottom: 0;
+	}
+	figure {
 		display: inline-block;
-		vertical-align: text-top;
+		margin-bottom: 0;
 	}
-	.leading-icon {
-		width: 25%;
-		text-align: center;
-		margin-right: 2%;
-	}
-	p {
-		width: 71%;
+	> div {
+		.leading-icon, p {
+			display: inline-block;
+			vertical-align: text-top;
+		}
+		.leading-icon {
+			width: 25%;
+			text-align: center;
+			margin-right: 2%;
+		}
+		p {
+			width: 71%;
+		}
 	}
 }
 
@@ -331,6 +384,7 @@ article {
 
 .actions li {
 	@extend %button-list-item;
+	display: block;
 	background-color: #000;
 	color: #fff;
 	a {
@@ -340,12 +394,57 @@ article {
 			color: #fff;
 		}
 	}
+	.icon {
+		font-size: 48px;
+	}
+}
+
+div.code {
+	padding: 6px;
+	background-color: #fff;
+	color: #3b3b3b;
+	@include border-radius(3px);
+	.code-var {
+		color: #0046ab;
+	}
+	.code-operator {
+		color: #2d90d7;
+	}
+	.code-object {
+		color: #8735a5;
+	}
+	.code-number {
+		color: #00cddc;
+	}
+	.tech {
+		display: none;
+	}
+}
+
+.no-touch .actions li {
+	border: 0;
+	@include border-radius(3px);
+	a {
+		padding: 0;
+	}
+	.icon {
+		font-size: 1.4em;
+	}
 }
 
 footer {
+	figure {
+		display: none;
+	}
 	@include respond-to(laptop) {
 		display: inline-block;
-		max-width: 34%;
+		width: 34%;
+		.related {
+			margin-bottom: 24px;
+		}
+		figure {
+			display: block;
+		}
 	}
 }
 
@@ -359,9 +458,8 @@ footer li {
 	white-space: nowrap;
 }
 
-
-/*
- media queries
- */
+.strike {
+	text-decoration: line-through;
+}
 
 @import "projects";

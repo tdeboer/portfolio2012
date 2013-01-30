@@ -2,12 +2,12 @@
  * assigned project colors: id, text color, highlight, support
  */
 $swipeable: swipeable, #729b42, #729b42;
-$listn: listn, #bfa330, #fc0;
+$listn: listn, #5f5f5f, #fc0;
 $anymeta: anymeta, #e20074, #e20074;
 $thesis: thesis, #00adef, #00adef;
 $webshop: webshop, #36948b, #36948b;
 $clubs: clubs, #ee9b0c, #ee9b0c;
-$skype: skype, #E20074, #E20074;
+$skype: skype, #cd1b52, #cd1b52;
 $videofolio: videofolio, #464E72, #464E72;
 $projects: $swipeable, $listn, $anymeta, $thesis, $webshop, $clubs, $skype, $videofolio;
 
@@ -15,7 +15,7 @@ $projects: $swipeable, $listn, $anymeta, $thesis, $webshop, $clubs, $skype, $vid
 	#project-#{nth($project, 1)} {
 		h2,
 		h3,
-		.leading-icon {
+		.leading-icon, a:hover {
 			color: nth($project, 2);
 		}
 		
@@ -23,6 +23,9 @@ $projects: $swipeable, $listn, $anymeta, $thesis, $webshop, $clubs, $skype, $vid
 			$pj-highlight: nth($project, 3);
 			@include contrasted($pj-highlight);
 			@include background-image(linear-gradient($pj-highlight, shade($pj-highlight, 40)));
+			&:hover {
+				@include background-image(linear-gradient($pj-highlight, shade($pj-highlight, 25)));
+			}
 			border-color: shade($pj-highlight, 40);
 			a {
 				color: contrast-color($pj-highlight);

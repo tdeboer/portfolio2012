@@ -2,20 +2,65 @@
 	<hgroup>
 		<h1>Clubs</h1>
 		<h2>Een echte hipster heeft een club.</h2>
+	
+		<div class="date">
+			<i class="icon-calendar"></i>
+			<span>2012 - 2013</span>
+		</div>
 	</hgroup>
 </header>
 
 <article>	
-	<section>
-		Administreer je eigen club via een webapp. Beheer je leden, bekijk hun status en acties en roep ze op tot actie voor een bepaald evenement. Het initiële idee is de ‘lunchclub’ bij Mediamatic waar iedereen mag meelunchen voor een vast bedrag per lunch.
-		Hiervoor gebruiken we RESTful routing via een simpel open-source framework in combinatie met backbone aan de frontend.
-	</section>
+	<p>Administreer je eigen club via een webapp. Beheer je leden, bekijk hun status en acties en roep ze op tot actie voor een bepaald evenement. Het idee is ontstaan door de de ‘lunchclub’ bij Mediamatic waar iedereen mag meelunchen voor een vast bedrag per lunch. Tot dusver werd in een spreadsheet bijgehouden wie wanneer had meegeluncht en wie welk bedrag had betaald. Een hoop gedoe, en niemand heeft zin om de spreadsheet bij te houden.</p>
+
+	<p>In het huidige project kan iedereen aangeven of hij wel of niet meeluncht. Het systeem houdt dan bij wanneer je geld moet bijstorten. Deze basis kan later worden uitgebreid met nieuwe features.</p>
+
+	<p>Voor de club wordt gebruik gemaakt van RESTful routing van een simpel open-source framework in combinatie met backbone aan de front-end.</p>
+	
+	<figure>
+		<img src="gfx/clubs-proto.png" />
+		<figcaption><i class="icon-angle-up"></i> Backbone proof of concept</figcaption>
+	</figure>
+	
+	<p>In de aanloop van dit project zijn er meerdere frameworks uitgeprobeerd zoals <a href="http://symfony.com/">Symphony</a>, <a href="http://www.yiiframework.com/">Yii</a> en uiteindelijk <a href="http://www.slimframework.com/">Slim</a>.</p>
+	
+	<p>Inmiddels werkt een klein team aan dit project en is het volop in ontwikkeling.</p>
+
+	<h3>Must haves</h3>
+	<ul class="list">
+		<li>Tickets bijhouden</li>
+		<li>Clubleden toevoegen</li>
+		<li>Mogelijkheid voor meerdere clubs</li>
+	</ul>
+
+	<h3>Should haves</h3>
+	<ul class="list">
+		<li>Email notificaties en reminders voor clubleden</li>
+		<li>Reacties plaatsen</li>
+		<li>Configuratie voor elke club</li>
+	</ul>
+	
+	<h3>Could haves</h3>
+	<ul class="list">
+		<li>Laatste oproep voor aanmelden en start het aftellen</li>
+		<li>Herhaal aanmeldingen (b.v. elke donderdag)</li>
+	</ul>
+	
+	<figure>
+		<img src="gfx/Clubs-Domainmodel.png" />
+		<figcaption><i class="icon-angle-up"></i> Domeinmodel voor de lunchclub</figcaption>
+	</figure>
+		
 </article>
 	
 <footer>
-	<ul>
-		<li>jQuery</li>
-		<li>Responsive design</li>
-		<li>Mobile</li>
-	</ul>
+	
+	<section>
+		<ul class="related">
+			<li>jQuery</li>
+			<li>Responsive design</li>
+			<li>Mobile</li>
+		</ul>
+	</section>
+	
 </footer>
