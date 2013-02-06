@@ -100,6 +100,7 @@ video {
 	color: #fff;
 	background-color: #111;
 	@include background-image(linear-gradient(#3C3C3C, #111));
+	outline: #000 solid 1px;
 	border: {
 		style: solid;
 		width: 1px;
